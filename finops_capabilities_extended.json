@@ -1,0 +1,1635 @@
+{
+    "framework": {
+        "name": "FinOps Foundation Framework", 
+        "version":"2024", 
+        "source": "https: //www. finops.org/framework/", 
+        "description": "Référentiel des capabilities FinOps et de leurs critères d'évaluation par niveau de maturité (Crawl / Walk / Run) .", 
+        "principles": [
+            "Teams need to collaborate", 
+            "Everyone takes ownership for their cloud usage", 
+            "A centralized team drives FinOps", 
+            "FinOps reports should be accessible and timely", 
+            "Decisions are driven by business value of cloud", 
+            "Take advantage of the variable cost model of the cloud"
+        ], 
+        "maturity levels": {
+            "crawl": {
+                "label": "Crawl (Foundation)", 
+                "description": "Processus ad-hoc, manuel, peu d'outillage. Visibilité partielle, ownership limité à une équipe centrale. ", 
+                "typical_coverage_pct":"< 50%", 
+                "cadence": "Trimestrielle ou reactive"
+            } , 
+            "walk": {
+                "label": "Walk (Growth)", 
+                "description": "Processus standardisés, premières automations, cadence régulière, ownership partagé avec les équipes produit.",
+                "typical coverage_pct": "50-80%", 
+                "cadence": "Mensuelle ou bi-mensuelle"
+            }, 
+            "run" : {
+                "label": "Run (Maturity)", 
+                "description": "Processus optimisés, automation avancée, culture FinOps ancrée dans toutes les équipes, amélioration continue mesurée.", "typical_coverage_pct":"> 80%", "cadence": "Quotidienne ou continue"
+            } 
+        }
+    }, 
+    "domains" : [
+        {
+            "id" : "understand", 
+            "name" : "Understand Usage & Cost", 
+            "description": "Collecte, attribution et analyse des coûts/usage cloud pour donner une visibilité actionnable.", 
+            "capabilities": [ 
+                {
+                    "id": "data_ingestion", 
+                    "abbr" : "DI", 
+                    "name" : "Data Ingestion", 
+                    "description": "Collecte, normalisation et consolidation des données de coût et d'usage depuis tous les providers et sources (CUR AWS, Azure exports, GCP billing, Saas, ISV) . ", 
+                    "maturity" : {
+                        "crawl": {
+                            "description": "Ingestion manuelle ou partielle. Un seul cloud majoritairement couvert. Pas de normalisation entre providers.", 
+                            "deliverables": [
+                                {
+                                    "id": "DI-CR-DEL-01", 
+                                    "name":"Inventaire des sources de facturation", 
+                                    "description": "Liste Excel des comptes/abonnements/projets cloud avec accès aux factures par provider.", 
+                                    "format": "Inventaire"
+                                }, 
+                                {
+                                    "id" : "DI-CR-DEL-02",
+                                    "name": "Activation des exports détaillés (CUR/usage)", 
+                                    "description":"Configuration initiale des exports CUR 53 / Azure cost exports / GCP BigQuery export sur au moins un cloud. ", 
+                                    "format": "Config"
+                                }, 
+                                {
+                                    "id" : "DI-CR-DEL-03", 
+                                    "name" : "Accès Cost Explorer/Cost Management/Billing", 
+                                    "description":"IAM roles donnant accès aux consoles natives de coûts pour l'équipe FinOps. ", 
+                                    "format": "Config"
+                                }
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id":"DI-CR-01", 
+                                    "statement": "Les factures de tous les cloud providers sont recuperees au moins mensuellement", 
+                                    "evidence_example": "Copies factures AWS/Azure/GCP du dernier mois"
+                                }, 
+                                {
+                                    "id": "DI-CR-02", 
+                                    "statement":"Les exports de facturation détaillés (CUR/FOCUS/usage) sont activés sur au moins un provider", 
+                                    "evidence_example":"S3 bucket CUR active, exports Azure/GCP vers storage"
+                                },
+                                {
+                                    "id" : "DI-CR-03", 
+                                    "statement": "Les données sont accessibles à au moins une personne FinOps", 
+                                    "evidence_example": "Accès Cost Explorer, Azure Cost Management, GCP Billing"
+                                }, 
+                                {
+                                    "id":"DI-CR-04", 
+                                    "statement":"Les coûts Marketplace/ISV sont identifiés séparément", 
+                                    "evidence example": "Filtre BILLING ENTITY dans Cost Explorer"
+                                } 
+                            ], 
+                            "kpi_targets": {
+                                "providers_ingested pct":"< 50%",
+                                "data freshness hours":"> 72", 
+                                "completeness_pct":"< 80%"
+                            } 
+                        }, 
+                        "walk": {
+                            "description": "Ingestion automatisée pour les clouds principaux. Normalisation partielle. Plateforme FinOps centrale (Cloudability, CloudHealth, etc. ).",
+                            "deliverables": [
+                                {
+                                    "id":"DI-WK-DEL-01",
+                                    "name":"Plateforme FinOps centrale (Cloudability/CloudHealth) ", 
+                                    "description":"Connecteurs AWS/Azure/GCP + Zylo + ISV ingérant quotidiennement dans une plateforme unique.", 
+                                    "format" : "Plateforme"
+                                }, 
+                                {
+                                    "id": "DI-WK-DEL-02", 
+                                    "name":"Data Quality Dashboard (fraîcheur, complétude)", 
+                                    "description": "Dashboard mesurant freshness et completeness par source/provider, avec alerting <24h.", 
+                                    "format": "Dashboard"
+                                }, 
+                                {
+                                    "id" :"DI-WK-DEL-03",
+                                    "name": "Politique FX et taux de change documentée", 
+                                    "description":"Procedure officielle d'application des taux de change multi-devises pour les rapports consolidés. ", 
+                                    "format": "Document"
+                                } 
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id": "DI-WK-01",
+                                    "statement":"Tous les cloud providers majeurs sont ingeres automatiquement dans une plateforme unique", 
+                                    "evidence_example": "Cloudability avec AWS/Azure/GCP connectés"
+                                }, 
+                                {
+                                    "id": "DI-WK-02", 
+                                    "statement": "Les données SaaS/ISV principales (Zylo, Marketplace) sont consolidées", 
+                                    "evidence_example": "Zylo API connectée à la plateforme"
+                                }, 
+                                {
+                                    "id" : "DI-WK-03", 
+                                    "statement": "Les données sont rafraîchies quotidiennement", 
+                                    "evidence_example":"Timestamps de dernier refresh < 24h"
+                                }, 
+                                {
+                                    "id":"DI-WK-04", 
+                                    "statement":"Les taux de change multi-devises sont appliques de facon coherente", 
+                                    "evidence example":"FX rates documentes et appliques mensuellement"
+                                }, 
+                                {
+                                    "id" : "DI-WK-05", 
+                                    "statement": "Une première normalisation FOCUS est en cours ou planifiée", 
+                                    "evidence_example":"Champs FOCUS mappes dans l'entrepôt"
+                                } 
+                            ], 
+                            "kpi targets": {
+                                "providers_ingested_pct":"50-80%", 
+                                "data_freshness_hours": "24-72", 
+                                "completeness_pct": "80-95%"
+                            }
+                        }, 
+                        "run": {
+                            "description": "Ingestion temps quasi-réel multi-cloud + SaaS + on-prem. Schéma FOCUS natif. Data quality monitoree. ", 
+                            "deliverables": [ 
+                                {
+                                    "id" : "DI-RN-DEL-01", 
+                                    "name": "Entrepôt FinOps FOCUS-compliant", 
+                                    "description":"Datasets FOCUS-compliant (BigQuery/Snowflake) couvrant cloud + SaaS + on-prem (TBM) avec data lineage.", 
+                                    "format": "Datawarehouse"
+                                }, 
+                                {
+                                    "id": "DI-RN-DEL-02", 
+                                    "name" : "Reconciliation factures vs ingere automatisée", 
+                                    "description": "Pipeline mensuel auto qui rapproche factures providers et données ingérées avec rapport d'écart.", 
+                                    "format": "Pipeline"
+                                }, 
+                                {
+                                    "id" : "DI-RN-DEL-03", 
+                                    "name": "Monitoring data quality avec alerting", 
+                                    "description": "Detection automatique des écarts qualité (volumes, retard freshness) avec routing Slack/ PagerDuty. ", 
+                                    "format": "Monitoring"
+                                } 
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id":"DI-RN-01",
+                                    "statement":"100% des dépenses IT cloud/Saas sont ingérées dans l'entrepôt FinOps", 
+                                    "evidence_example" : "Reconciliation mensuelle factures vs données ingérées"
+                                },
+                                {
+                                    "id":"DI-RN-02", 
+                                    "statement":"Les données sont disponibles en < 24h après emission par le provider", 
+                                    "evidence_example":"SLA data freshness ≤ 24h, monitore"
+                                }, 
+                                {
+                                    "id" : "DI-RN-03", 
+                                    "statement": "Le schéma FOCUS est implémenté pour toutes les sources", 
+                                    "evidence_example" : "Dataset FOCUS-compliant disponible dans BigQuery/Snowflake"
+                                }, 
+                                {
+                                    "id": "DI-RN-04", 
+                                    "statement": "Les écarts de qualité de données sont détectes automatiquement et alertes", 
+                                    "evidence_example": "Monitoring data quality avec alertes Slack/PagerDuty"
+                                }, 
+                                {
+                                    "id":"DI-RN-05",
+                                    "statement":"Les données on-prem / private cloud sont intégrées (TBM)", 
+                                    "evidence_example": "Coûts datacenter consolidés avec cloud public"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "providers_ingested_pct": "100%", 
+                                "data_freshness_hours":"< 24", 
+                                "completeness_pct": "> 99%"
+                            }
+                        }
+                    } 
+                }, 
+                {
+                    "id": "allocation", 
+                    "abbr": "AL", 
+                    "name": "Allocation", 
+                    "description": "Attribution des coûts cloud aux bonnes entités (BU, équipe, produit, projet) via tags, business mappings, règles de partage.", 
+                    "maturity": 
+                    {
+                        "crawl" : {
+                            "description": "Tagging ad-hoc. Beaucoup de coûts untagged. Pas de règles d'allocation partagées. ", 
+                            "deliverables" : [ 
+                                {
+                                    "id" : "AL-CR-DEL-01", 
+                                    "name": "Tagging Strategy minimum document", 
+                                    "description": "Document minimal listant les tags obligatoires (cost-center) et naming convention.", 
+                                    "format": "Document"
+                                }, 
+                                {
+                                    "id": "AL-CR-DEL-02", 
+                                    "name": "Rapport mensuel untagged spend", 
+                                    "description": "Rapport % et $ de spend untagged par provider avec top accounts non-conformes.", 
+                                    "format": "Rapport"
+                                }, 
+                                {
+                                    "id":"AL-CR-DEL-03", 
+                                    "name": "Liste des coûts partagés identifiés", 
+                                    "description": "Document listant les services partagés (network, logging, security) avec leur volume. ", 
+                                    "format" : "Document"
+                                } 
+                            ], 
+                            "assessments": [
+                                {
+                                    "id":"AL-CR-01",
+                                    "statement":"Une strategie de tagging minimum est documentee", 
+                                    "evidence_example": "Standard avec env, app, owner, cost-center"
+                                }, 
+                                {
+                                    "id": "AL-CR-02", 
+                                    "statement": "Au moins un tag obligatoire est defini (ex: cost center)", 
+                                    "evidence_example": "Politique documentee dans wiki"
+                                }, 
+                                {
+                                    "id":"AL-CR-03", 
+                                    "statement":"Les coûts untagged sont quantifies", 
+                                    "evidence_example":"Rapport mensuel % untagged spend"
+                                }, 
+                                {
+                                    "id":"AL-CR-04", 
+                                    "statement": "Les coûts partages (network, logging) sont identifies", 
+                                    "evidence_example" : "Liste des services shared documentee"
+                                } 
+                            ], 
+                            "kpi targets": {
+                                "tag_coverage_pct":"< 50%", 
+                                "allocation_coverage_pct":"< 70%", 
+                                "untagged_spend_pct":"> 20%"
+                            }
+                        }, 
+                        "walk":{
+                            "description":"Standards de tagging appliques. Enforcement partiel. Règles de coûts partages documentees. Business mappings en place. ", 
+                            "deliverables": [
+                                {
+                                    "id" : "AL-WK-DEL-01", 
+                                    "name": "Tag enforcement (SCP / Azure Policy / Org Policy)", 
+                                    "description": "Policies bloquant la création de ressources sans tags obligatoires sur au moins un provider .", 
+                                    "format": "Policy"
+                                }, 
+                                {
+                                    "id" : "AL-WK-DEL-02", 
+                                    "name": "Business Mappings / Virtual Tags catalogue", 
+                                    "description": "Catalogue documente des règles business mappings (cost_center virtuel, BU mapping) maintenu dans Cloudability.", 
+                                    "format": "Document"
+                                }, 
+                                {
+                                    "id": "AL-WK-DEL-03", 
+                                    "name": "Tag Coverage Dashboard mensuel", 
+                                    "description": "Dashboard publié mensuellement avec coverage % par BU/env, untagged spend $.", 
+                                    "format": "Dashboard"
+                                }
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id": "AL-WK-01", 
+                                    "statement": "Les tags obligatoires sont enforced sur au moins un provider", 
+                                    "evidence_example": "Service Control Policies AWS ou Azure Policy bloquant creation sans tag"
+                                }, 
+                                {
+                                    "id": "AL-WK-02", 
+                                    "statement": "Les business mappings (virtual tags) sont utilisés pour combler les gaps de tagging", 
+                                    "evidence_example": "Business mapping 'cost_center' dans Cloudability"
+                                }, 
+                                {
+                                    "id":"AL-WK-03", 
+                                    "statement":"Les coûts partages sont alloués selon une règle documentee", 
+                                    "evidence example" : "Proration par spend, par headcount, ou split fixe"
+                                }, 
+                                {
+                                    "id": "AL-WK-04", 
+                                    "statement":"Le Marketplace est traite comme un cost center separe", 
+                                    "evidence_example" : "BILLING_ENTITY-AWS Marketplace isole"
+                                }, 
+                                {
+                                    "id": "AL-WK-05", 
+                                    "statement": "Un rapport de tag coverage est produit mensuellement", 
+                                    "evidence_example": "Dashboard coverage par BU et par env"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "tag_coverage_pct":"70-90%",
+                                "allocation_coverage_pct": "80-95%", 
+                                "untagged_spend_pct": "5-15%"
+                            }
+                        }, 
+                        "run": {
+                            "description":"Tagging quasi-100%. Enforcement automatique bloquant. Chargeback complet possible. Business mappings maintenus avec gouvernance. ", 
+                            "deliverables" : [
+                                {
+                                    "id" : "AL-RN-DEL-01", 
+                                    "name": "Auto-remédiation tags manquants", 
+                                    "description":"Lambda/Function App qui flagge ou met en quarantaine les ressources créées sans tags. ", 
+                                    "format" : "Script"
+                                }, 
+                                {
+                                    "id": "AL-RN-DEL-02", 
+                                    "name": "Pipeline d'allocation coûts partagés", 
+                                    "description":"Pipeline quotidien qui répartit automatiquement les coûts partagés selon règles documentées.", 
+                                    "format": "Pipeline"
+                                }, 
+                                {
+                                    "id": "AL-RN-DEL-03",
+                                    "name":"Audit indépendant d'allocation (SOX)", 
+                                    "description": "Rapport annuel d'audit Finance/Compta validant la fiabilité de l'allocation (SOX/interne) . ", 
+                                    "format": "Rapport"
+                                } 
+                            ], 
+                            "assessments": [
+                                {
+                                    "id":"AL-RN-01", 
+                                    "statement":"Le tag coverage dépasse 95% sur le spend allouable", 
+                                    "evidence_example": "KPI suivi hebdo, cible z 95%"
+                                },
+                                {
+                                    "id": "AL-RN-02", 
+                                    "statement": "Les ressources sans tag sont automatiquement flaggees/blockées/remediees", 
+                                    "evidence example": "Lambda auto-remediation ou quarantine"
+                                }, 
+                                {
+                                    "id": "AL-RN-03", 
+                                    "statement": "Les business mappings sont revus à chaque org change", 
+                                    "evidence_example": "Process HRIS -> FinOps documente"
+                                }, 
+                                {
+                                    "id": "AL-RN-04", 
+                                    "statement" : "100% des coûts partages sont alloues automatiquement", 
+                                    "evidence_example": "Pipeline quotidien d'allocation"
+                                }, 
+                                {
+                                    "id" : "AL-RN-05",
+                                    "statement":"L'allocation est auditée indépendamment (Finance/Compta)", 
+                                    "evidence_example": "Audit annuel SOX/interne"
+                                } 
+                            ], 
+                            "kpi targets": {
+                                "tag coverage pct": "> 95%", 
+                                "allocation_coverage pct":"2 99%", 
+                                "untagged_spend pct": "< 2%"
+                            } 
+                        }
+                    }
+                }, 
+                {
+                    "id":"reporting_analytics", 
+                    "abbr":"RA", 
+                    "name": "Reporting & Analytics", 
+                    "description":"Production et diffusion de rapports adaptés à chaque persona (Exécutif, Finance, FinOps, Engineering, Produit).", 
+                    "maturity" : 
+                    {
+                        "crawl": 
+                        {
+                            "description": "Rapports ad-hoc produits a la demande. Consolidation manuelle (Excel). Pas de self-service. ", 
+                            "deliverables" : [
+                                {
+                                    "id": "RA-CR-DEL-01", 
+                                    "name": "Rapport mensuel de spend (email)", "description":"Email mensuel récurrent avec totaux par vendor envoyé aux principaux stakeholders. ", "format":"Rapport"
+                                }, 
+                                {
+                                    "id" : "RA-CR-DEL-02", "name": "Liste de distribution stakeholders", "description":"Liste documentée des destinataires (CFO, CIO, FinOps, leads) avec cadence d'envoi . ", "format": "Document"
+                                }, 
+                                {
+                                    "id": "RA-CR-DEL-03", "name": "Accès consoles natives cloud (Cost Explorer)", "description": "IAM/RBAC ouvrant l'accès lecture aux consoles de coûts pour les leads techniques.", "format" : "Config"
+                                }
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id":"RA-CR-01", "statement":"Un rapport mensuel de spend est produit et partage", "evidence example": "Email mensuel avec totaux par vendor"
+                                }, 
+                                {
+                                    "id":"RA-CR-02", "statement": "Les principaux stakeholders reçoivent le rapport", "evidence_example": "Liste distribution CFO, CIO, FinOps"
+                                }, 
+                                {
+                                    "id":"RA-CR-03", "statement": "Les consoles natives cloud sont accessibles aux équipes techniques", "evidence example": "Cost Explorer ouvert aux leads"
+                                } 
+                            ], 
+                            "kpi targets": 
+                            {
+                                "dashboards_active":"< 3", 
+                                "report_cadence_days": "> 30", 
+                                "self_service_users_pct":"< 10%"
+                            } 
+                        }, 
+                        "walk" : 
+                        {
+                            "description": "Dashboards par persona. Self-service pour BU. Drill-down possible. Cadence régulière.", 
+                            "deliverables": [
+                                {
+                                    "id": "RA-WK-DEL-01",
+                                    "name": "Dashboards par persona (Exec/Finance/Eng)", "description":"3+ dashboards Power BI/Tableau/Cloudability dédiés à chaque persona avec metrics adaptés.", "format" : "Dashboard"
+                                }, 
+                                {
+                                    "id" : "RA-WK-DEL-02", "name": "Self-service BU avec filtres", "description":"Plateforme self-service (Cloudability ou Grafana) ou les BU consultent leurs coûts filtres .", "format": "Plateforme"
+                                } , 
+                                {
+                                    "id" : "RA-WK-DEL-03", "name" : "Vue Marketplace/ISV séparée",
+                                    "description": "Dashboard dedie Marketplace avec top vendeurs, contrats, éligibilité EDP. ", 
+                                    "format": "Dashboard"
+                                } 
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id": "RA-WK-01", "statement":"Des dashboards distincts existent pour Exec / Finance / Engineering", "evidence_example": "Dashboards Power BI ou Tableau par role"
+                                }, 
+                                {
+                                    "id": "RA-WK-02", "statement": "Le self-service est disponible pour les owners de BU", "evidence_example": "Accès Cloudability ou Grafana filtre"
+                                }, 
+                                {
+                                    "id": "RA-WK-03", "statement":"Les rapports sont rafraîchis au moins hebdomadairement", "evidence example": "Refresh quotidien ou horaire"
+                                }, 
+                                {
+                                    "id" : "RA-WK-04", "statement": "Des vues Marketplace/ISV séparées existent", "evidence_example": "Dashboard Marketplace dédié" 
+                                } 
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "dashboards_active":"3-10", 
+                                "report_cadence_days":"7-30",
+                                "self_service_users_pct":"20-50%"
+                            }
+                        },    
+                        "run": 
+                        {
+                            "description":"Analytics embedded dans les outils des équipes. Unit metrics visibles. Insights prédictifs (ML) . ", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id":"RA-RN-DEL-01", 
+                                    "name":"Plugin Backstage/Slack FinOps", "description" : "Plugin Backstage exposant les coûts dans les outils dey + bot Slack pour requêtes ad-hoc.", "format":"Plateforme"
+                                }, 
+                                {
+                                    "id": "RA-RN-DEL-02", 
+                                    "name":"Unit metrics dashboard avec ML insights", "description": "Dashboard avec unit metrics ($/transaction, $/1K tokens) + insights ML automatiques (top movers, forecast) . ", 
+                                    "format": "Dashboard"
+                                }, 
+                                {
+                                    "id": "RA-RN-DEL-03", "name":"Telemetry usage des dashboards", "description":"Dashboard de tracking adoption (qui consulte quoi, fréquence) pour mesurer maturité diffusée .", "format" : "Dashboard"
+                                } 
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id": "RA-RN-01", 
+                                    "statement": "Les coûts sont exposes dans les outils de développement (Backstage, Slack, Jira)", 
+                                    "evidence_example": "Plugin Backstage FinOps"
+                                }, 
+                                {
+                                    "id": "RA-RN-02", 
+                                    "statement": "Les dashboards incluent des unit metrics business", "evidence_example": "$/transaction, $/user, $/1K tokens"
+                                }, 
+                                {
+                                    "id":"RA-RN-03","statement":"Des insights/predictions automatiques sont générés", "evidence_example": "Forecast ML, top movers détectés"
+                                }, 
+                                {
+                                    "id": "RA-RN-04", "statement" : "La majorité des équipes techniques consulte les rapports au moins hebdo", "evidence_example": "Telemetry sur dashboards"
+                                } 
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "dashboards_active":"> 10 par persona", 
+                                "report_cadence_days":"≤ 1", 
+                                "self_service_users_pct":"> 70%"
+                            }
+                        }
+                    }
+                }, 
+                {
+                    "id": "anomaly_management", 
+                    "abbr" : "AM", 
+                    "name" : "Anomaly Management", 
+                    "description": "Détection, triage et remediation des variations anormales de coût ou d'usage. ", 
+                    "maturity": {
+                        "crawl" : {
+                            "description" : "Anomalies détectées après-coup (via facture mensuelle) . Pas d'alerte automatique.", 
+                            "deliverables" : [ 
+                                {
+                                    "id": "AM-CR-DEL-01", "name": "Revue MOM mensuelle (MBR)", "description": "Compte-rendu MBR documenté revoyant les écarts inter-mois principaux.", "format": "Document"
+                                }, 
+                                {
+                                    "id": "AM-CR-DEL-02", "name": "Registre des incidents coût historiques", "description": "Registre Excel/Jira des pics historiques majeurs avec date, montant, root cause. ", "format": "Registre"
+                                }, 
+                                {
+                                    "id" : "AM-CR-DEL-03", "name": "Procédure ad-hoc de remontée d'anomalie", "description": "Procédure informelle de remontée d'anomalie identifiée a posteriori.", "format" : "Document"
+                                } 
+                            ], 
+                            "assessments" : [
+                                {
+                                    "id": "AM-CR-01", "statement": "Les écarts inter-mois sont revus au moins mensuellement", "evidence_example": "Revue MOM lors du MBR"
+                                }, 
+                                {
+                                    "id" : "AM-CR-02", "statement": "Les principaux pics historiques sont documentés", "evidence example": "Registre des incidents coût"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "time_to_detect_days":"> 15", 
+                                "time_to_remediate_days":"> 30", 
+                                "anomalies_auto_detected_pct":"< 20%"
+                            } 
+                        }, 
+                        "walk": {
+                            "description": "Alertes automatiques sur seuils. Triage manuel. Root cause analysis documentée. ", 
+                            "deliverables": [
+                                {
+                                    "id": "AM-WK-DEL-01", 
+                                    "name": "AWS Cost Anomaly Detection / Azure Cost Alerts actives", 
+                                    "description": "Configuration AWS Cost Anomaly Detection ou Azure Cost Alerts avec monitors et seuils. ", "format": "Config"
+                                }, 
+                                {
+                                    "id" : "AM-WK-DEL-02", "name": "Routage alertes vers canal surveillé", "description": "Webhooks configurés vers Slack/Teams (#finops-alerts) avec routing par scope. ", "format": "Config"
+                                } , 
+                                {
+                                    "id": "AM-WK-DEL-03", "name":"Anomaly Triage Runbook", "description": "Procédure documentée de triage : qui, quoi, quand investiguer, template Jira. ", "format": "Runbook"
+                                }
+                            ], 
+                            "assessments": 
+                            [ 
+                                {
+                                    "id" : "AM-WK-01", 
+                                    "statement": "AWS Cost Anomaly Detection ou équivalent est activé", "evidence_example": "Cost Anomaly Detection ou Azure Cost Alerts configures"
+                                }, 
+                                {
+                                    "id" : "AM-WK-02", "statement": "Les alertes sont routees vers un canal surveille (Slack, Teams, email) ", "evidence_example": "Webhook vers #finops-alerts"
+                                }, 
+                                {
+                                    "id": "AM-WK-03", "statement":"Un process de triage (qui, quoi, quand) est documente", "evidence_example" : "Runbook d'investigation"
+                                }, 
+                                {
+                                    "id": "AM-WK-04", "statement":"Les anomalies confirmées ont un owner", "evidence_example":"Ticket Jira assigné dans les 24h"
+                                }
+                            ], 
+                            "kpi_targets":
+                            {
+                                "time_to_detect_days":"3-15", 
+                                "time_to_remediate_days": "7-30", 
+                                "anomalies_auto_detected_pct": "50-80%"
+                            } 
+                        }, 
+                        "run": {
+                            "description": "Détection ML multi-dimensionnelle. Auto-remédiation possible. SLA de réponse respectés. ", 
+                            "deliverables" : [
+                                {
+                                    "id" :"AM-RN-DEL-01", "name": "Détection ML contextuelle", "description" : "Modèle ML ou service manage avancé prenant en compte saisonnalité et growth pour la détection. ", "format":"Script"
+                                }, 
+                                {
+                                    "id": "AM-RN-DEL-02", "name": "Auto-remédiation runbooks (orphelines)", "description":"Scripts d'auto-arrêt automatique pour cas fréquents (ressources orphelines, runaway costs) . ", "format": "Script"
+                                }, 
+                                {
+                                    "id": "AM-RN-DEL-03", "name":"Anomaly Registry avec lessons learned + policies", "description":"Registre des anomalies avec root cause + nouvelle guardrail créée post-incident.", "format" : "Registre" 
+                                } 
+                            ], 
+                            "assessments" : [
+                                {
+                                    "id": "AM-RN-01", "statement":"La détection est basée sur du ML contextuel (saisonnalité, growth)", "evidence_example" : "Modèle ML ou service managé avancé"
+                                }, 
+                                {
+                                    "id": "AM-RN-02", "statement": "Les anomalies sont détectées en < 24h", "evidence example": "SLA détection mesuré et respecté"
+                                },
+                                {
+                                    "id": "AM-RN-03", "statement": "Un runbook d'auto-remédiation existe pour les cas fréquents", "evidence_example": "Scripts d'arrêt auto ressources orphelines"
+                                }, 
+                                {
+                                    "id": "AM-RN-04", "statement": "Les leçons tirées sont réinjectées en policy", "evidence_example": "Nouvelle guardrail créée post-incident"
+                                }
+                            ],
+                            "kpi_targets": {
+                                "time_to_detect_days":"< 1", 
+                                "time_to_remediate_days":"< 7", 
+                                "anomalies_auto_detected_pct":"> 95%"
+                            }
+                        }
+                    }
+                }
+            ]
+        }, 
+        {
+            "id": "quantify", 
+            "name": "Quantify Business Value", 
+            "description": "Relier le coût cloud à la valeur business : planification, prévision, budgétisation, benchmarking, unit economics. ", 
+            "capabilities": [
+                {
+                    "id": "planning_estimating", 
+                    "abbr": "PE", 
+                    "name": "Planning & Estimating", 
+                    "description": "Estimer le coût futur des workloads/projets avant déploiement.", 
+                    "maturity" : {
+                        "crawl": 
+                        {
+                            "description": "Estimations ponctuelles par FinOps/archi. Pas de gabarit réutilisable. ", 
+                            "deliverables": 
+                            [ 
+                                {
+                                    "id":"PE-CR-DEL-01", 
+                                    "name": "Estimations AWS Pricing Calculator archivées", "description": "Estimations ad-hoc archivées dans wiki avec lien Pricing Calculator pour projets majeurs.", "format" : "Document"
+                                }, 
+                                {
+                                    "id" : "PE-CR-DEL-02", "name":"Procédure d'estimation FinOps central", "description": "Procédure documentée pour demander une estimation au FinOps central. ", "format" : "Document"
+                                }, 
+                                {
+                                    "id": "PE-CR-DEL-03", "name": "Liste des projets ayant été estimés", "description": "Liste des projets majeurs avec date d'estimation, auteur et hypothèses. ", "format" : "Document"
+                                }
+                            ], 
+                            "assessments" : 
+                            [
+                                {
+                                    "id" :"PE-CR-01", "statement":"Des estimations sont faites pour les projets majeurs", "evidence_example": "Estimations AWS Pricing Calculator archivées"
+                                }
+                            ],
+                            "kpi_targets": 
+                            {
+                                "projects_estimated_pct":"< 30%", 
+                                "estimation_accuracy_pct": "+ > 50%"
+                            }
+                        }, 
+                        "walk": 
+                        {
+                            "description": "Processus d'estimation standardise. Templates par type de workload. Estimations intégrées au process projet.", 
+                            "deliverables": 
+                            [ 
+                                {
+                                    "id":"PE-WK-DEL-01", "name": "Workload Estimation Templates par type", "description": "Templates par type (API, Data pipeline, ML training, IA inference) avec hypothèses standard.", "format": "Template"
+                                },
+                                {
+                                    "id": "PE-WK-DEL-02", 
+                                    "name":"PMO Gate FinOps Sign-off Process", "description": "Process formel integrant FinOps sign-off a chaque gate projet PMO. ", "format": "Process"
+                                },
+                                {
+                                    "id": "PE-WK-DEL-03", "name": "Templates incluant TCO 3 ans (capex +opex)", "description":"Templates projetant capex + opex sur 3 ans avec courbe de migration. ", "format" : "Template" 
+                                } 
+                            ], 
+                            "assessments": 
+                            [ 
+                                {
+                                    "id" : "PE-WK-01", "statement": "Un template d'estimation existe pour chaque type de workload", 
+                                    "evidence_example": "Templates pour API, Data pipeline, ML training"
+                                }, 
+                                {
+                                    "id": "PE-WK-02", 
+                                    "statement": "Les estimations sont requises avant chaque gate projet", "evidence_example": "Gate PMO integrant FinOps sign-off"
+                                }, 
+                                {
+                                    "id" : "PE-WK-03", "statement": "Les estimations incluent la TCO sur 3 ans", "evidence_example": "Template projette capex + opex 3 ans"
+                                }
+                            ], 
+                            "kpi targets": 
+                            {
+                                "projects_estimated pct":"50-80%", 
+                                "estimation_accuracy_pct":"# 20-50%" 
+                            }
+                        }, 
+                        "run" : 
+                        {
+                            "description": "Estimations self-service par les equipes. Modèles ML pour la prediction. Feedback loop actual vs estime.", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id" : "PE-RN-DEL-01", "name":"Portail self-service d'estimation", "description": "Portail web ou les équipes estiment leurs workloads en autonomie sans intervention FinOps.", "format": "Plateforme"
+                                }, 
+                                {
+                                    "id": "PE-RN-DEL-02", "name" : "Dashboard estimate vs actual", "description": "Dashboard suivi écart estimation vs coût réel par projet avec accuracy %. ", "format" : "Dashboard"
+                                }, 
+                                {
+                                    "id": "PE-RN-DEL-03", "name" : "Modèle ML d'estimation prédictive", "description" : "Modèle ML qui apprend des projets passés pour améliorer accuracy des estimations.", "format": "Script"
+                                }
+                            ], 
+                            "assessments": 
+                            [
+                                {"id":"PE-RN-01", "statement":"Les equipes peuvent estimer leurs workloads sans FinOps", "evidence example" : "Portail self-service d'estimation"
+                                }, 
+                                {
+                                    "id" : "PE-RN-02", "statement": "Les estimations sont comparees aux actuels et les écarts sont traces", "evidence_example": "Dashboard estimate vs actual"
+                                }, 
+                                {
+                                    "id": "PE-RN-03", "statement": "Les templates évoluent en fonction des retours", "evidence_example": "Historique versions templates"
+                                } 
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "projects_estimated_pct":"> 95%", 
+                                "estimation_accuracy_pct":" < 20%"
+                            } 
+                        }
+                    }
+                }, 
+                {
+                    "id": "forecasting", 
+                    "abbr": "FC", 
+                    "name" : "Forecasting", 
+                    "description": "Prévisions de dépenses à horizon mois/trimestre/année pour budget, engagements contractuels, capacity planning. ", 
+                    "maturity": 
+                    {
+                        "crawl": 
+                        {
+                            "description":"Forecasts bases sur growth simple (ex: +20% YOY). Erreur élevée.","deliverables" : 
+                            [
+                                {
+                                    "id":"FC-CR-DEL-01", 
+                                    "name": "Forecast annuel global (budget IT)", "description":"Section cloud du budget IT annuel avec growth rate simple (ex: +20% Yoy) .", "format": "Document"
+                                }, 
+                                {
+                                    "id" : "FC-CR-DEL-02", "name": "Revue trimestrielle variance", "description": "Compte-rendu trimestriel comparant forecast vs actual avec écart en %. ", "format": "Rapport"
+                                }, 
+                                {
+                                    "id":"FC-CR-DEL-03", "name": "Hypothèses de forecast documentees", "description": "Document listant les hypothèses (growth, projets, saisonnalité) utilisées.", "format": "Document"
+                                } 
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id":"FC-CR-01", "statement":"Un forecast annuel existe au niveau global", "evidence example": "Budget IT annuel avec section cloud"
+                                }, 
+                                {
+                                    "id": "FC-CR-02", "statement": "Le forecast est compare à l'actual trimestriellement", "evidence_example": "Revue trimestrielle variance"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "forecast_accuracy_pct":"+ > 20%", "forecast_horizon months":"12", "forecast_granularity": "Global"
+                            }
+                        }, 
+                        "walk": 
+                        {
+                            "description": "Forecasts par service/BU. Baseline TTM. Scénarios multiples (conservateur/équilibré/agressif) .", 
+                            "deliverables": 
+                            [ 
+                                {
+                                    "id":"FC-WK-DEL -01","name":"Forecasting Methodology Document (TTM, capping)", "description": "Méthodo officielle : baseline TTM, growth capping +25%, scénarios.", "format": "Document"
+                                }, 
+                                {
+                                    "id": "FC-WK-DEL-02","name":"Forecast par BU/service multi-scénarios", "description": "Forecast 12-36 mois par BU/cost center avec 3 scénarios (Conservateur/Équilibré/Agressif) . ", "format" : "Dashboard"
+                                }, 
+                                {
+                                    "id": "FC-WK-DEL-03", "name":"Variance Analysis mensuelle (MBR)", "description":"Rapport mensuel commente écart forecast/actual par BU avec drivers expliqués.", "format": "Rapport"
+                                }
+                            ],
+                            "assessments": 
+                            [
+                                {
+                                    "id": "FC-WK-01", "statement": "La baseline utilisée est la moyenne TTM (12 mois) et non le dernier mois", "evidence_example": "Méthodologie documentée"
+                                } , 
+                                {
+                                    "id": "FC-WK-02", "statement": "Le forecast est granulaire par BU/service", "evidence_example":"Forecast par cost center"
+                                }, 
+                                {
+                                    "id" :"FC-WK-03", "statement": "Des scénarios multiples sont produits", "evidence_example": "Scénarios Conservateur / Équilibré / Agressif"
+                                }, 
+                                {
+                                    "id": "FC-WK-04", "statement": "Le forecast est revu mensuellement avec variance explicitée", "evidence_example": "MBR avec variance analysis"
+                                }, 
+                                {
+                                    "id": "FC-WK-05", "statement":"Le growth rate est plafonné (+25%) si historique < 24 mois", "evidence_example" : "Règle de capping documentée"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "forecast_accuracy_pct":"± 5-20%", 
+                                "forecast_horizon_months":"12-36", "forecast_granularity": "BU/Service"
+                            }
+                        }, 
+                        "run": 
+                        {
+                            "description": "Forecasts ML multi-scénarios. Integres aux outils Finance. Accuracy proche du plan annuel corporate.", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id":"FC-RN-DEL-01", "name": "Modèle ML (Prophet/ARIMA) forecasting", "description": "Modèle ML intégrant saisonnalité et événements business pour forecast accuracy +5%.", "format": "Script"
+                                }, 
+                                {
+                                    "id": "FC-RN-DEL-02", "name": "Intégration ERP (SAP/Oracle planning)", "description":"Intégration des forecasts cloud aux systèmes financiers pour planification corporate. ", "format": "Pipeline"
+                                }, 
+                                {
+                                    "id" : "FC-RN-DEL-03", "name": "Forecast AI/ML workloads dédié", "description": "Modèle forecast dédié Bedrock/OpenAI avec prévisions tokens/inferences trigger commitments. ", "format": "Dashboard"
+                                }
+                            ], 
+                            "assessments" : 
+                                [ 
+                                    {
+                                        "id" : "FC-RN-01", "statement": "Les forecasts utilisent du ML (saisonnalité, événements business)", "evidence_example": "Modèle Prophet/ARIMA ou service managé"
+                                    }, 
+                                    {
+                                        "id": "FC-RN-02", "statement": "Les forecasts sont intégrés aux systèmes financiers (ERP)", "evidence_example" : "Intégration SAP/Oracle avec planification"
+                                    }, 
+                                    {
+                                        "id":"FC-RN-03", "statement": "Les workloads AI/ML ont un forecast dédié (tokens/inference)", "evidence_example" : "Modèle forecast Bedrock/OpenAI"
+                                    }, 
+                                    {
+                                        "id": "FC-RN-04", "statement":"Les forecasts alimentent les décisions de commitment (RI/ SP/EDP)", "evidence_example":"Trigger automatique de recommandations RI"
+                                    }
+                                ], 
+                                "kpi_targets": 
+                                {
+                                    "forecast_accuracy_pct":"+ < 5%", "forecast_horizon_months":"36-60", "forecast_granularity": "Workload / unit metric"
+                                }
+                            }
+                        }
+                    }, 
+                    {
+                        "id":"budgeting", "abbr":"BG","name":"Budgeting", "description":"Cadrage budgétaire, allocation aux BU, alertes de dépassement, processus de reallocation. ", 
+                        "maturity" : 
+                        {
+                            "crawl": 
+                            {
+                                "description" : "Un budget global cloud existe sans ventilation détaillée.", "deliverables": 
+                                [
+                                    {
+                                        "id": "BG-CR-DEL-01", "name":"Budget annuel cloud approuvé", "description":"Ligne budgétaire IT cloud approuvée annuellement avec montant global.", "format": "Document"
+                                    }, 
+                                    {
+                                        "id" : "BG-CR-DEL-02", "name":"AWS Budget alerte 80% global", "description": "AWS Budget configuré au niveau payer account avec alerte à 80% du seuil.", "format" : "Config"
+                                    }, 
+                                    {
+                                        "id": "BG-CR-DEL-03", 
+                                        "name": "Owner budget global identifié", 
+                                        "description": "Document désignant un owner unique du budget cloud global.", 
+                                        "format": "Document"
+                                    }
+                                ], 
+                                "assessments": 
+                                [
+                                    {
+                                        "id":"BG-CR-01","statement":"Un budget annuel cloud est approuvé", "evidence_example": "Ligne budgétaire IT cloud"
+                                    }, 
+                                    {
+                                        "id": "BG-CR-02", "statement": "Des seuils d'alerte existent sur le spend global", "evidence_example": "AWS Budget alerte à 80%"
+                                    }
+                                ], 
+                                "kpi_targets": {
+                                    "budget_owners_count":"1", "budget_variance_pct":"> 15%", "alert_coverage_pct":"< 30%"
+                                }
+                            }, 
+                            "walk": {
+                                "description": "Budgets par BU/service avec owners. Alertes multi-niveaux. Process de réallocation documenté.", 
+                                "deliverables" : [
+                                    {
+                                        "id": "BG-WK-DEL-01","name":"Mapping budget , owner par BU", "description":"Document de mapping de chaque budget BU/cost center avec son owner désigné.", "format": "Document"
+                                    }, 
+                                    {
+                                    "id":"BG-WK-DEL-02","name":"Budgets multi-seuils (50/80/100%)","description":"Configuration AWS/Azure/GCP Budgets avec alertes multi-seuils routées vers owners. ", "format":"Config"
+                                }, 
+                                {
+                                    "id":"BG-WK-DEL-03", "name": "Budget Reallocation Workflow", "description": "Process documenté de demande/approbation de réallocation inter-BU avec template. ", "format": "Process"} ], "assessments": [{"id": "BG-WK-01", "statement":"Chaque BU/cost center a un budget dédié avec owner", "evidence_example" : "Mapping budget + owner documenté"
+                                }, 
+                                {
+                                    "id" :"BG-WK-02", "statement" : "Des alertes à 50/80/100% du budget sont actives", "evidence_example": "ANS Budgets multi-seuils"
+                                }, 
+                                {
+                                    "id": "BG-WK-03", "statement": "Un process de réallocation inter-BU existe", "evidence_example": "Template demande réallocation"
+                                }, 
+                                {
+                                    "id": "BG-WK-04", "statement": "Les variances sont expliquées mensuellement", "evidence_example": "Rapport variance avec commentaires owners"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "budget_owners_count": "> 5","budget_variance_pct":"5-15%", "alert_coverage_pct": "60-90%"
+                            }
+                        }, 
+                        "run" : 
+                        { 
+                            "description": "Budgets dynamiques par workload. Policies de blocage automatique. Intégration avec procurement.", 
+                            "deliverables":
+                            [
+                                {
+                                    "id":"BG-RN-DEL-01", "name":"Budgets au niveau workload/projet", "description":"Chaque projet/workload majeur a sa ligne budget avec tracking dédié. ", "format": "Document"
+                                }, 
+                                {
+                                    "id":"BG-RN-DEL-02", "name": "Guardrails automatiques (arrêt auto)", "description": "Scripts automatiques qui arrêtent les ressources non-prod si budget dépassé. ", "format" : "Script"
+                                }, 
+                                {
+                                    "id" : "BG-RN-DEL-03", "name": "Workflow auto-créé sur dépassement", "description": "Pipeline qui crée auto un ticket Jira + notif owner sur dépassement budget. ", "format":"Pipeline"
+                                } 
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id": "BG-RN-01", "statement": "Les budgets sont alloués au niveau workload/projet", "evidence_example": "Chaque projet a sa ligne budget"
+                                }, 
+                                {
+                                    "id": "BG-RN-02", "statement":"Des guardrails automatiques limitent les dépassements", "evidence_example": "Arrêt auto ressources non-prod si budget dépassé"
+                                }, 
+                                {
+                                    "id": "BG-RN-03", "statement": "Les écarts budgétaires déclenchent automatiquement un workflow", "evidence_example":"Jira ticket auto-créé + notif owner"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "budget_owners_count": "Par workload", "budget_variance_pct":"< 5%", "alert_coverage_pct":"> 95%"
+                            }
+                        }
+                    }
+                }, 
+                {
+                    "id": "benchmarking", 
+                    "abbr": "BM", 
+                    "name": "Benchmarking", 
+                    "description":"Comparer efficience, prix, taux d'utilisation vs benchmarks internes, peer group, ou marché.", 
+                    "maturity": 
+                    {
+                        "crawl":
+                        {
+                            "description" : "Benchmarks ponctuels sur demande. Pas de métriques standards.", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id":"BM-CR-DEL-01", "name":"Comparaison prod/nprod documentée", "description" : "Comparaison ponctuelle des ratios prod/nprod par environnement.", "format": "Document"
+                                }, 
+                                {
+                                    "id":"BM-CR-DEL-02", "name": "Liste des comparaisons internes ad-hoc", "description":"Liste des benchmarks internes realises (BU vs BU, env vs env) avec dates. ", "format": "Document"
+                                }, 
+                                {
+                                    "id" : "BM-CR-DEL-03", "name": "Première analyse efficience par BU", "description": "Première analyse comparative d'efficience entre BU principales.", "format": "Rapport"
+                                } 
+                            ], 
+                            "assessments" : 
+                            [ 
+                                {
+                                    "id" : "BM-CR-01", "statement": "Des comparaisons internes (env, BU) sont réalisées ponctuellement", "evidence example": "Comparaison prod/nprod documentée"
+                                } 
+                            ], 
+                            "kpi_targets": 
+                                {
+                                    "benchmarks_tracked":"< 3", 
+                                    "peer_benchmark_access" :"No"
+                                } 
+                            }, 
+                            "walk" : 
+                            {
+                                "description": "Métriques internes standardisées. Accès aux benchmarks peer (FinOps Foundation, Cloudability). ", 
+                                "deliverables": 
+                                [
+                                    {
+                                        "id":"BM-WK-DEL-01", "name":"Internal Benchmarks Catalog ($/transaction)", "description": "Catalogue benchmarks internes avec valeurs et trend 12 mois par produit/BU.", "format": "Document"
+                                    }, 
+                                    {
+                                        "id" : "BM-WK-DEL-02", "name":"Coverage/ Utilization Dashboard RI/SP", "description":"Dashboard ratios d'efficience (RI/SP coverage vs utilization) avec alerting. ", "format": "Dashboard"
+                                    }, 
+                                    {
+                                        "id" :"BM-WK-DEL-03", "name": "Abonnement FinOps Foundation/Apptio Insights", "description": "Subscription active aux benchmarks externes (FinOps Foundation, Apptio Insights, Gartner) . ", "format": "Subscription"
+                                    }
+                                    ], 
+                                    "assessments": 
+                                    [
+                                        {
+                                            "id": "BM-WK-01", "statement": "Des unit metrics sont calculés et compares historiquement", "evidence_example":"$/transaction trend 12 mois"
+                                        }, 
+                                        {
+                                            "id": "BM-WK-02", "statement": "Les ratios d'efficience sont publiés (ex: coverage, utilization)", "evidence_example" : "Dashboard RI/SP coverage vs utilization"
+                                        }, 
+                                        {
+                                            "id": "BM-WK-03", "statement":"L'organisation accède à des benchmarks externes", "evidence example" : "Abonnement FinOps Foundation / études"
+                                        } 
+                                    ], 
+                                    "kpi targets": 
+                                    {
+                                        "benchmarks_tracked":"5-15", "peer_benchmark_access": "Partial"
+                                    }
+                                }, 
+                                "run": 
+                                {
+                                    "description": "Benchmarks continus, comparaisons automatiques, input des décisions d'architecture. ", 
+                                    "deliverables" : 
+                                    [ 
+                                        {
+                                            "id" : "BM-RN-DEL-01", "name": "Benchmarks externes intégrés aux dashboards", "description": "Percentile peer affiche dans Power BI/Tableau pour comparaison directe. ", "format": "Dashboard"
+                                        }, 
+                                        {
+                                            "id": "BM-RN-DEL-02", "name": "ADR avec section benchmark", "description": "ADR récents incluant section benchmark vs alternatives marché. ", "format": "Document"
+                                        }, 
+                                        {
+                                            "id": "BM-RN-DEL-03", "name":"Contributions FinOps community (talks, papers)", "description":"Talks Finops X, publications, contribution benchmarks community FinOps Foundation. ", "format": "Document"
+                                        } 
+                                    ], 
+                                    "assessments": 
+                                    [
+                                        {
+                                            "id": "BM-RN-01", "statement":"Les benchmarks externes sont integres aux dashboards", "evidence_example": "Percentile peer affiche dans Power BI"
+                                        }, 
+                                        {
+                                            "id" : "BM-RN-02", "statement": "Les décisions d'architecture citent des benchmarks", "evidence example": "ADR avec section benchmark"
+                                        }, 
+                                        {
+                                            "id": "BM-RN-03", "statement" : "L'organisation publie des benchmarks (FinOps Foundation, études) ", "evidence_example":"Contribution public FinOps community" 
+                                        } 
+                                    ], 
+                                    "kpi_targets": 
+                                    {
+                                        "benchmarks_tracked":"> 20",
+                                        "peer_benchmark_access": "Full"
+                                    }
+                                }
+                            }
+                        }, 
+                        {
+                            "id":"unit_economics", 
+                            "abbr": "UE", 
+                            "name": "Unit Economics", 
+                            "description": "Coût cloud ramené à une unité de valeur business ($/transaction, $/user, $/1K tokens, $/claim) .", 
+                            "maturity": 
+                            {
+                                "crawl": 
+                                {
+                                    "description": "Pas d'unit economics. Le coût est regarde en absolu. ", 
+                                    "deliverables": 
+                                    [
+                                        {
+                                            "id": "UE-CR-DEL-01", "name": "Liste des unit metrics business identifiés", "description": "Liste : transactions/mois, claims, users, sans calcul automatique.", "format": "Document"
+                                        }, 
+                                        {
+                                            "id": "UE-CR-DEL-02", "name":"Première analyse $/unit pour 1 workload", "description":"Analyse one-shot $/transaction pour le workload principal.", "format": "Document"
+                                        }, 
+                                        {
+                                            "id": "UE-CR-DEL-03", "name": "Mapping spend + unit (manuel)", "description": "Mapping manuel des spend cloud vers unités business pour le workload pilote. ", "format": "Document" 
+                                        } 
+                                    ], 
+                                    "assessments" : 
+                                    [
+                                        {
+                                            "id" : "UE-CR-01", "statement":"Les unit metrics business clés sont identifiées", "evidence_example":"Liste: transactions/mois, claims, users"
+                                        } 
+                                    ], 
+                                    "kpi_targets": 
+                                    {
+                                        "unit metrics_active":"0", "workloads_with_unit_economics_pct":"0%"
+                                    }
+                                }, 
+                            "walk":
+                            {
+                                "description": "Unit metrics produits pour les workloads majeurs. Lien avec métriques Finance/Produit.", 
+                                "deliverables": 
+                                [
+                                    {
+                                        "id":"UE-WK-DEL-01","name":"Unit Metrics Catalog (3+ metrics)", "description":"Catalogue de 3+ unit metrics ($/user, $/transaction, $/claim) avec workload, formule, owner.", "format": "Document"
+                                    }, 
+                                    {
+                                        "id":"UE-WK-DEL-02","name":"Dashboard $/1K tokens AI/ML", "description":"Dashboard dédié AI/ML : $/1K tokens, $/inference, par modèle Bedrock/OpenAI.", "format": "Dashboard"
+                                    }, 
+                                    {
+                                        "id":"UE-WK-DEL-03", "name": "Revue QBR unit economics avec Produit", "description": "Revue trimestrielle unit metrics partagée avec équipes Produit/Finance. ", "format": "Rapport"
+                                    } 
+                                ], 
+                                "assessments": 
+                                [
+                                    {"id": "UE-WK-01", "statement":"Au moins 3 unit metrics sont suivis (ex: $/user, $/transaction, $/claim)", "evidence_example": "Dashboard unit economics"
+                                }, 
+                                {
+                                    "id":"UE-WK-02","statement": "Les workloads AI/ML ont un $/1K tokens ou $/inference", "evidence_example": "Dashboard Bedrock/OpenAI coût unitaire"
+                                }, 
+                                {
+                                    "id": "UE-WK-03", "statement": "Les unit metrics sont partagés avec Produit/Finance", 
+                                    "evidence_example": "Revue QBR avec Produit"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "unit_metrics_active": "3-10", "workloads_with_unit_economics_pct":"30-60%"
+                            } 
+                        }, 
+                        "run": 
+                        {
+                            "description": "Unit economics guident les décisions. Objectifs de réduction $/unit annuels. Integration dans OKR. ", 
+                            "deliverables" : 
+                            [ 
+                                {
+                                    "id": "UE-RN-DEL-01", "name": "Catalog complet workloads avec unit metric", "description": "Catalog de tous les workloads majeurs avec unit metric documenté et tracker .", "format": "Document"
+                                }, 
+                                {
+                                    "id" : "UE-RN-DEL-02", "name" : "OKR Produit avec target $/unit", "description": "OKR partagé FinOps + Produit avec target annuel de réduction $/unit (ex: - 10%) .", "format" : "OKR"
+                                }, 
+                                {
+                                    "id" : "UE-RN-DEL-03","name":"Slide CFO mensuel avec $/unit", "description": "Slide Executive mensuelle avec unit economics et trend YoY. ", "format": "Document"
+                                } 
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id":"UE-RN-01", "statement": "Chaque workload majeur a un unit metric documenté", "evidence_example": "Catalog workloads avec unit metric"
+                                }, 
+                                {
+                                    "id" : "UE-RN-02", "statement": "Des objectifs annuels de réduction $/unit sont définis", "evidence_example": "OKR avec target -10% $/transaction"
+                                }, 
+                                {
+                                    "id": "UE-RN-03", "statement":"Les unit metrics sont dans les OKR Produit", "evidence_example": "OKR partagé FinOps + Produit"
+                                }, 
+                                {
+                                    "id": "UE-RN-04", "statement":"Les unit economics sont reportés à l'Executive", "evidence_example": "Slide CFO monthly avec $/unit"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "unit_metrics_active":"> 15", "workloads_with_unit_economics_pct":"> 80%"
+                            } 
+                        }
+                    } 
+                }
+            ]
+        }, 
+        {
+            "id" : "optimize", "name": "Optimize Usage & Cost", "description": "Réduire le coût à valeur business équivalente (rightsizing, commitments, architecture, sustainability) . ", 
+            "capabilities":
+            [
+                {
+                    "id" : "architecting_cloud", 
+                    "abbr" : "AC", 
+                    "name": "Architecting for Cloud", 
+                    "description": "Choix d'architecture cost-aware (serverless, managed services, multi-region, data gravity).", 
+                    "maturity": 
+                    {
+                        "crawl" : 
+                        {
+                            "description": "Choix d'architecture faits sans considération coût explicite.", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id": "AC-CR-DEL-01", "name": "Section coût dans ADR (basique)", "description": "Template ADR mentionnant le coût mais sans calcul détaillé. ", "format": "Template"
+                                }, 
+                                {
+                                    "id" : "AC-CR-DEL-02", "name" : "Liste ADR contenant section coût", "description":"Liste des ADR récents ayant traité le coût avec date et auteur . ", "format" : "Document"
+                                }, 
+                                {
+                                    "id" : "AC-CR-DEL-03", "name": "Procédure d'estimation pré-build ( informelle)",
+                                    "description": "Procédure ad-hoc d'estimation avant lancement build.", "format": "Document"
+                                    }
+                                ], 
+                                "assessments": 
+                                [
+                                    {"id":"AC-CR-01",
+                                    "statement":"Le coût est mentionné dans les revues d'architecture", "evidence_example": "Section coût dans ADR"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "adrs_with_cost_section_pct":"< 30%"
+                            }
+                        }, 
+                        "walk": 
+                        {
+                            "description": "Coût est un critère explicite en revue d'architecture. Patterns cost-effective documentés. ", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id": "AC-WK-DEL-01", "name": "Architecture Review Board avec FinOps Sign-off", "description":"Process ARB officiel avec sign-off FinOps obligatoire pour nouveau service.", "format": "Process"
+                                }, 
+                                {
+                                    "id" : "AC-WK-DEL-02", "name": "Cost-Aware Architecture Cookbook", "description": "Patterns documentés (serverless, managed, multi-region, data gravity) avec impact coût.", "format": "Document"
+                                }, 
+                                {
+                                    "id" : "AC-WK-DEL-03","name":"Comparatif coût dans RFC", "description": "Template RFC incluant comparatif coût des alternatives technologiques.", "format": "Template"
+                                }
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id":"AC-WK-01", "statement": "Les revues d'architecture incluent un sign-off FinOps", "evidence_example":"Process ARB avec FinOps"
+                                }, 
+                                {
+                                    "id" : "AC-WK-02", "statement": "Des patterns cost-effective sont documentés",
+                                    "evidence_example": "Cookbook d'architectures par type" 
+                                }, 
+                                {
+                                    "id": "AC-WK-03","statement":"Le coût est un critère dans les choix technologiques", "evidence_example" : "Comparatif coût dans RFC"
+                                }
+                            ], 
+                            "kpi_targets": 
+                            {
+                                "adrs_with_cost_section_pct":"60-90%"
+                            }
+                        }, 
+                        "run": 
+                        {
+                            "description": "Architecture cost-aware embedded. Coût estimé avant build. Trade-offs multi-dimensionnels (coût/perf/durabilité) .", 
+                            "deliverables": 
+                            [
+                                {
+                                    "id":"AC-RN-DEL-01","name":"Process ARB 100% coverage avec gate", "description": "Process ARB systématique pour tout nouveau service avec gate bloquant.", 
+                                    "format": "Process"
+                                }, 
+                                {
+                                    "id" : "AC-RN-DEL-02", "name": "ADR avec matrice trade-off coût/perf/carbone", "description": "Template ADR avec matrice 3D arbitrage coût/perf/carbone.", "format": "Template"
+                                }, 
+                                {
+                                    "id":"AC-RN-DEL-03", "name": "Revue annuelle architectures existantes", "description": "Process annuel de revue des architectures existantes pour optimisation continue.", "format": "Process"
+                                }
+                            ], 
+                            "assessments": 
+                            [
+                                {
+                                    "id": "AC-RN-01", "statement":"Tout nouveau service passe par une revue coût", "evidence_example": "Process ARB 100% coverage"
+                                }, 
+                                {
+                                    "id": "AC-RN-02", "statement": "Les arbitrages coût/perf/carbone sont explicites", "evidence_example": "ADR avec matrice trade-off"
+                                }, 
+                                {
+                                    "id":"AC-RN-03", "statement": "Les architectures sont revisitées pour optimisation continue", "evidence_example": "Revue annuelle architectures existantes"
+                                }
+                            ], 
+                            "kpi_targets":
+                            {
+                                "adrs_with_cost_section_pct":"100%"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "workload_optimization", 
+                    "abbr": "WO", 
+                    "name": "Workload Optimization", 
+                    "description":"Rightsizing, scheduling, idle/orphan resources, storage tiering, egress optimization, Kubernetes efficiency.", "maturity": {"crawl": {"description": "Optimisations ad-hoc menées par le FinOps central. ", "deliverables": [ {"id" : "WO-CR-DEL-01", "name": "Inventaire ressources idle/orphans", "description":"Rapport inventaire EBS unattached, instances stopped >30j, IPs unused. ", "format": "Inventaire"}, {"id": "WO-CR-DEL-02", "name": "AWS Compute Optimizer active", "description" : "AWS Compute Optimizer / Azure Advisor / GCP Recommender activés et accessibles . ", "format": "Config"}, {"id": "WO-CR-DEL-03", "name" : "Liste recommandations rightsizing initiales", "description": "Liste première vague de recommandations rightsizing avec impact $. ", "format" : "Document"}], "assessments" : [{"id": "WO-CR-01", "statement": "Un inventaire des ressources idle/orphans existe", "evidence_example" : "Rapport EBS unattached, instances stopped"}, {"id": "WO-CR-02", "statement": "Des recommandations rightsizing sont générées (Compute Optimizer, Advisor)", "evidence_example":"AWS Compute Optimizer active"}], "kpi_targets": {"idle_resources_pct":"> 20%", "rightsizing_applied_pct":"< 30%", "savings_realized_pct":"< 40% of identified"}}, "walk": {"description": "Campagnes d'optimisation récurrentes. Automation partielle (scheduler non-prod, lifecycle storage) .","deliverables": [ {"id": "WO-WK-DEL-01", "name": "Instance Scheduler non-prod","description": "Configuration Instance Scheduler/Ansible automation pour stop/start non-prod.","format": "Config"}, {"id": "WO-WK-DEL-02", "name": "Storage lifecycle policies (S3/Azure cool)", "description": "Policies lifecycle déployées (S3 Glacier, Azure cool tier) avec règles documentees .", "format" : "Config"}, {"id" : "WO-WK-DEL-03", "name" : "Kubecost/OpenCost déployé", "description":"Plateforme Kubecost ou OpenCost avec allocation par_namespace/team.", "format": "Plateforme"}], "assessments": [{"id": "WO-WK-01", "statement": "Les environnements non-prod sont schedules (stop/start)", "evidence example" :"Instance Scheduler actif"}, {"id" : "WO-WK-02","statement": "Les storage lifecycles sont configurés (53 Glacier, Azure cool)", "evidence_example": "Lifecycle policies actives"}, {"id" : "WO-WK-03", "statement": "Les EBS/disks non-attaches sont nettoyés régulièrement", "evidence_example": "Script mensuel de cleanup"}, {"id" : "WO-WK-04", "statement": "Les recommandations rightsizing sont traitées dans un SLA", "evidence_example":"SLA 30 jours pour appliquer recos"}, {"id" : "WO-WK-05", "statement": "Kubernetes cost est alloue par namespace/team", "evidence_example" : "Kubecost ou OpenCost actif"}], "kpi_targets": {"idle_resources_pct": "5-15%", "rightsizing_applied_pct": "50-80%", "savings_realized_pct": "50-80% of identified"}}, "run": {"description": "Auto-scaling, spot, auto-rightsizing. Kubernetes optimise. Savings en continu. ", "deliverables" : [{"id" : "WO-RN-DEL-01", "name" : "Auto-scaling généralisé (Karpenter, Aurora Serverless)", "description": "Auto-scaling déployé sur compute (Karpenter) et DB (Aurora Serverless, RDS auto-scaling) .", "format": "Config"}, {"id": "WO-RN-DEL-02", "name":"Stratégie Spot/Preemptible (>30%)", "description": "Strategie Spot avec > 30% adoption sur workloads tolerants, fallback documente.", "format": "Config"}, {"id": "WO-RN-DEL-03", "name": "VPA + Kubecost savings hebdo", "description": "Vertical Pod Autoscaler + Kubecost savings revus hebdomadairement avec recos appliquées . ", "format" : "Pipeline"} ], "assessments" : [{"id" : "WO-RN-01", "statement": "L'auto-scaling est généralisé sur compute et DB", "evidence example": "Auto-scaling RDS, Aurora Serverless, Karpenter"}, {"id": "WO-RN-02", "statement":"Le Spot/Preemptible est utilisé sur les workloads éligibles", "evidence_example": " > 30% spot sur workloads tolérants"}, {"id": "WO-RN-03", "statement":"Les Kubernetes requests/limits sont optimisés en continu", "evidence_example" : "VPA + Kubecost savings hebdo"}, {"id":"WO-RN-04", "statement":"L'egress/inter-region est monitore et optimisé", "evidence_example" : "CloudFront, VPC endpoints, data gravity"}], "kpi_targets": {"idle_resources_pct":"< 2%", "rightsizing_applied_pct":"> 95%", "savings_realized_pct": "> 90% of identified"}}}
+                },
+                {
+                    "id": "rate_optimization", "abbr": "RO", "name": "Rate Optimization", "description": "Engagements contractuels (RI, SP, CUD, EDP, PPA, MACC) et stratégie d'achat. ", "maturity" : {"crawl": {"description": "Aucun engagement ou engagements ad-hoc. 100% On-Demand majoritairement.", "deliverables": [{"id":"RO-CR-DEL-01", "name": "Rapport coverage RI/SP/CUD actuel", "description": "Rapport Cost Explorer/Cost Management montrant coverage % actuel par type d'engagement. ","format" : "Rapport"}, {"id" : "RO-CR-DEL -02", "name": "Registre des engagements existants", "description": "Registre Excel/Jira des RI/SP/CUD avec dates expiration et montants. ", "format": "Registre"}, {"id" : "RO-CR-DEL-03", "name" : "Première analyse break-even", "description": "Analyse one-shot break-even pour décider d'un premier achat RI.", "format": "Document" } ], "assessments" : [{"id" : "RO-CR-01", "statement": "Le coverage actuel RI/SP/CUD est connu", "evidence_example": "Rapport coverage Cost Explorer"}, {"id": "RO-CR-02", "statement": "Les engagements existants sont inventories avec dates d'expiration", "evidence_example": "Registre des RI/SP"} ], "kpi targets": {"commitment_coverage_pct":"< 30%", "commitment_utilization_pct":"< 80%"}}, "walk": {"description":"Strategie commitments active. Break-even analysis. Mix RI + SP. Negotiation EDP en cours.", "deliverables": [ {"id" : "RO-WK-DEL-01", "name": "Commitments Strategy Playbook", "description":"Document : target coverage, mix RI/SP/CUD, calendrier achats, break-even.", "format":"Document"}, {"id" : "RO-WK-DEL-02", "name": "Calendrier d'achat trimestriel partage", "description": "Calendrier des achats RI/SP par trimestre, partage Procurement/FinOps.", "format": "Document"}, {"id": "RO-WK-DEL-03", "name": "EDP/MACC/CUD spend-based signe", "description":"Contrat EDP AWS / MACC Azure / CUD GCP signe avec discount baseline.", "format": "Contrat"} ], "assessments" : [ {"id" : "RO-WK-01", "statement":"Une strategie commitments documentee existe (coverage target)", "evidence_example": "Playbook achats RI/SP"}, {"id": "RO-WK-02", "statement":"Un calendrier d'achat trimestriel est suivi", "evidence_example":"Calendrier achats RI partage"}, {"id": "RO-WK-03", "statement":"Un programme de discount contractuel est en place (EDP, MACC, CUD)","evidence_example": "EDP AWS signe"}, {"id": "RO-WK-04", "statement": "L'utilization des commitments est monitoree mensuellement", "evidence_example" : "Alerte si utilization < 95%"} ], "kpi_targets" : {"commitment_coverage_pct": "50-70%", "commitment_utilization_pct" : "90-95%"}}, "run": {"description": "Mix optimal RI/SP/CUD multi-provider. Renouvellement EDP/PPA/MACC négocié avec baseline TTM. Marketplace couvert si possible.", "deliverables": [ {"id": "RO-RN-DEL-01", "name": "Process d'ajustement mensuel automatisé", "description": "Pipeline mensuel automatique d'ajustement des commitments selon usage et coverage target.", "format": "Pipeline"}, {"id" : "RO-RN-DEL-02", "name" : "Contract Renewal Dossier T-180", "description":"Dossier renouvellement EDP avec baseline TTM, forecast pluriannuel, 3 scénarios, leviers. ", "format": "Document"}, {"id": "RO-RN-DEL-03", "name" :"Plan AI/ML commitments dedie", "description": "Plan dedie SageMaker SP + provisioned throughput Bedrock pour AI/ML workloads .", "format": "Document"}], "assessments": [{"id": "RO-RN-01", "statement": "Les commitments sont ajustes mensuellement", "evidence_example" : "Process d'ajustement automatisé"}, {"id": "RO-RN-02", "statement": "La négociation contractuelle est préparée 6 mois avant (T-180)", "evidence_example": "Dossier renouvellement EDP avec scénarios"}, {"id" : "RO-RN-03", "statement": "Les leviers avances sont exploités (ramp-up, shortfall cap, Marketplace)", "evidence_example":"Clauses contractuelles actives"}, {"id": "RO-RN-04", "statement":"Les AI/ML workloads ont un plan de commitment dédié", "evidence_example" : "SageMaker SP + provisioned throughput Bedrock"}], "kpi_targets": {"commitment_coverage_pct":"> 70%", "commitment_utilization_pct": "> 95%", "discount_effective_pct":"> 15%"}}}
+                },
+                {
+                    "id": "cloud_sustainability", "abbr": "CS", "name": "Cloud Sustainability", "description": "Empreinte carbone du cloud. Arbitrages coût/carbone. Reporting GHG Protocol, CSRD, SBTi.", "maturity": {"crawl": {"description": "Empreinte carbone connue globalement via outils providers.", "deliverables":[{"id":"CS-CR-DEL-01", "name": "Outils carbone providers actives", "description": "AWS CCFT / Azure Emissions Impact / GCP Carbon Footprint actives et accessibles. ", "format": "Config"}, {"id" : "CS-CR-DEL-02", "name": "Rapport empreinte annuelle globale", "description": "Rapport annuel kgC02e total cloud avec breakdown par provider.", "format": "Rapport"}, {"id": "CS-CR-DEL-03", "name" : "Inventaire scope 2/3 cloud" , "description": "Document inventaire scope 2 (electricity) et scope 3 (cloud) consolidé . ", "format" : "Document"} ], "assessments" : [ {"id": "CS-CR-01", "statement":"Les outils carbone des providers sont actives", "evidence_example": "AWS CCFT, Azure Emissions Impact, GCP Carbon Footprint"},{"id": "CS-CR-02", "statement": "L'empreinte annuelle totale est connue", "evidence_example": "kgCO2e annuel total"}], "kpi_targets": {"co2_reported":"Yes","co2_granularity": "Organization"}}, "walk": {"description": "Empreinte par service/région/env. Intégrée au reporting FinOps. Alignement CSRD en cours.", "deliverables" : [ {"id": "CS-WK-DEL-01", "name" : "Dashboard CO2 par service/région", "description": "Dashboard kgCO2e par service/région avec trend YoY.", "format": "Dashboard"}, {"id": "CS-WK-DEL-02","name":"kgCO2e par unit metric (tokens, transactions)", "description": "Indicateur kgCO2e/transaction et kgCO2e/1K tokens calcule et publié. ", "format" : "Dashboard"}, {"id" : "CS-WK-DEL-03", "name":"Carbon-Aware Region Selection Policy", "description":"Policy documentée privilégiant régions bas-carbone pour nouveaux workloads . ", "format":"Policy"}], "assessments": [{"id":"CS-WK-01", "statement":"L'empreinte est ventilée par service et region", "evidence_example": "Dashboard (02 par service"}, {"id":"CS-WK-02","statement":"Un indicateur kgCO2e par unit metric existe", "evidence_example":"kgCO2e/transaction, kgCO2e/1K tokens"}, {"id":"CS-WK-03", "statement": "Les régions bas-carbone sont privilégiées pour les nouveaux workloads", "evidence_example": "Policy sélection région"} ], "kpi_targets":{"co2_granularity":"Service/Region", "carbon_intensity_kgco2e_per_usd": "Tracked YoY"}}, "run": {"description" : "Optimisation carbone intégrée aux décisions techniques. Reporting aligne CSRD/SEC. SBTi targets en trajectoire.", "deliverables" : [ {"id" : "CS-RN-DEL-01", "name": "ADR avec matrice coût/carbone/perf 30", "description":"ADR récents incluant arbitrage explicite 3D coût/carbone/performance .", "format" : "Document"}, {"id" : "CS-RN-DEL-02", "name": "OKR reduction CO2 par workload (SBTi)", "description": "OKR par workload aligné targets SBTi avec target % réduction annuelle. ", "format" : "OKR"}, {"id": "CS-RN-DEL-03", "name":"Section CSRD/SEC scope 3 cloud", "description": "Section officielle CSRD/SEC Climate avec données cloud consolidées scope 3.", "format" : "Document" } ], "assessments" : [ {"id" : "CS-RN-01", "statement": "Les décisions d'architecture arbitrent coût/carbone/performance", "evidence_example" : "ADR avec matrice 3D"}, {"id": "CS-RN-02", "statement": "Les objectifs SBTi sont traduits en targets FinOps", "evidence_example" : "OKR reduction (02 par workload"}, {"id": "CS-RN-03", "statement": "Le reporting CSRD/SEC inclut les données cloud", "evidence_example": "Section CSRD scope 3 cloud"}], "kpi_targets":{"co2_granularity": "Workload","co2_yoy_reduction_pct":"> 5%"}}}
+                },
+                {
+                    "id": "licensing_saas", "abbr": "LS", "name": "Licensing & SaaS", "description": "Gouvernance SaaS/ISV, BYOL, Marketplace, licences éditeurs (Microsoft, Oracle, SAP, Databricks).", "maturity": {"crawl": {"description": "Licences suivies en silo (Procurement, IT). Peu de visibilité FinOps.", "deliverables": [{"id":"LS-CR-DEL-01", "name": "Registre Excel SaaS principaux", "description": "Registre Excel des contrats Saas principaux avec montants annuels et expirations.", "format": "Registre"}, {"id" :"LS-CR-DEL-02", "name" :"Liste licences éditeur (BYOL)", "description":"Liste des licences BYOL (SQL Server, RHEL, Oracle) déclarées par IT.", "format" : "Document"}, {"id" : "LS-CR-DEL-03", "name": "Première analyse Marketplace", "description": "Analyse one-shot des achats Marketplace avec top vendeurs .", "format": "Document"} ], "assessments": [{"id":"LS-CR-01", "statement": "Un inventaire des principales licences SaaS existe", "evidence_example":"Registre Excel des contrats Saas"}], "kpi_targets":{"saas_tools_inventoried_pct":"< 50%", "byol_coverage_pct":"< 30%"}}, "walk": {"description": "SaaS Management Platform (Zylo, Productiv) active. BYOL optimisé. Marketplace consolidé.", "deliverables":[{"id":"LS-WK-DEL-01","name":"SaaS Management Platform (Zylo/Productiv)", "description":"SMP déployé connecté SSO/HRIS pour visibilité usage Saas.", "format": "Plateforme"}, {"id" : "LS-WK-DEL-02", "name": "AWS License Manager + BYOL inventory", "description":"Configuration AWS License Manager avec inventaire BYOL exhaustif.", "format": "Config"}, {"id": "LS-WK-DEL-03","name": "Marketplace Catalog approuvé", "description": "Catalog des produits Marketplace approuvés + workflow d'approbation.", "format": "Process"} ], "assessments": [{"id":"LS-WK-01", "statement": "Un SMP (Zylo, Productiv) est déployé", "evidence_example": "Zylo connecté aux providers SSO/HRIS"}, {"id": "LS-WK-02","statement": "Les licences BYOL (SQL Server, RHEL, Oracle) sont inventoriées", "evidence_example": "Inventaire BYOL AWS License Manager"}, {"id": "LS-WK-03","statement": "Les achats Marketplace sont gouvernés", "evidence_example": "Catalog Marketplace approuvé"}], "kpi_targets": {"saas_tools_inventoried_pct": "70-90%", "byol_coverage_pct":"50-80%", "saas_waste_pct":"10-20%"}}, "run": {"description":"SaaS rightsizing automatique. Licences optimisées en continu. Négociation annuelle avec données.", "deliverables" : [{"id": "LS-RN-DEL-01", "name": "Workflow reclamation licences inactives", "description": "Pipeline qui détecte les licences Saas inactives >60j et déclenche reclamation.", "format" : "Pipeline"}, {"id":"LS-RN-DEL-02","name" : "Dossier renégociation Saas data-backed","description" : "Dossier renégociation annuel Saas avec données usage Zylo et benchmarks.", "format" :"Document"}, {"id": "LS-RN-DEL-03", "name": "Dashboard Marketplace éligibilité EDP", "description": "Dashboard tracking Marketplace éligible vs non-éligible EDP avec optimisations.", "format": "Dashboard"} ], "assessments": [{"id": "LS-RN-01","statement":"Les licences inactives sont détectées et recyclées", "evidence_example": "Workflow reclamation > 60j inactivité"}, {"id": "LS-RN-02", "statement":"Les renégociations SaaS utilisent des données d'usage", "evidence_example" : "Dossier renégo Zylo-backed"}, {"id": "LS-RN-OB", "statement": "Le Marketplace fait l'objet d'un suivi spécifique (éligibilité EDP)", "evidence_example": "Dashboard Marketplace eligible/non eligible"}], "kpi_targets":{"saas_tools_inventoried_pct":"100%","byol_coverage_pct":"> 95%","saas_waste_pct":"< 5%"}}}
+                }
+            ]
+        },
+        {
+            "id": "manage", 
+            "name" : "Manage the FinOps Practice", 
+            "description": "Structure, gouvernance et evolution de la pratique FinOps (operating model, education, policies, assessment) .", 
+            "capabilities":[
+                {
+                    "id":"practice_operations", "abbr": "PO", "name": "FinOps Practice Operations", "description":"Operating model, RACI, rituels (WBR/MBR/QBR), backlog d'initiatives, roadmap.", "maturity": {"crawl": {"description": "Une personne FinOps centrale. Pas de rituel formel.", "deliverables": [{"id": "PO-CR-DEL-01", "name": "Rôle FinOps Lead défini", "description":"Document de définition du rôle FinOps Lead avec responsabilités principales. ", "format" : "Document"}, {"id": "PO-CR-DEL-02", "name": "Backlog FinOps initial (Jira/Notion)", "description": "Backlog initial des initiatives FinOps avec priorisation basique.", "format":"Backlog"}, {"id": "PO-CR-DEL-03", "name":"Liste stakeholders FinOps", "description": "Liste des stakeholders cles FinOps avec contacts et rôles.", "format": "Document"} ], "assessments": [{"id": "PO-CR-01", "statement": "Au moins une personne est dédiée au FinOps", "evidence_example": "Rôle FinOps Lead defini"}, {"id":"PO-CR-02", "statement": "Un backlog d'initiatives FinOps existe", "evidence_example": "Backlog Jira/Notion"}], "kpi_targets": {"finops_fte": "1", "rituals_active":"< 2", "raci_documented" : "No" }}, "walk": {"description": "Équipe FinOps core. RACI documente. Rituels WBR/MBR actifs. Roadmap annuelle.", "deliverables" : [{"id" : "PO-WK-DEL-01", "name": "FinOps Operating Model & RACI", "description": "Document org structure équipe FinOps + RACI FinOps/Eng/Fin/Procurement.", "format" : "Document"}, {"id": "PO-WK-DEL-02", "name": "Calendrier WBR/MBR/QBR avec comptes-rendus", "description": "Calendrier rituels avec agendas, participants, comptes-rendus archives. ", "format" : "Document"}, {"id": "PO-WK-DEL-03", "name":"FinOps Roadmap annuelle", "description": "Roadmap publiée avec initiatives, OKR, milestones. ", "format": "Document"} ], "assessments" : [ {"id": "PO-WK-01", "statement":"Une équipe FinOps (> 3 FTE) existe", "evidence_example": "Org chart équipe"} , {"id" :"PO-WK-02", "statement": "Un RACI FinOps/Eng/Fin/Procurement est documenté", "evidence_ example" : "Matrice RACI"}, {"id": "PO-WK-03", "statement":"Rituels WBR, MBR et QBR sont tenus", "evidence_example": "Calendriers et comptes-rendus"}, {"id" : "PO-WK-04", "statement": "Une roadmap FinOps annuelle est publiée", "evidence_example":"Document roadmap"} ], "kpi_targets": {"finops_fte" : "3-10", "rituals_active":"3-5", "raci_documented": "Yes"}}, "run": {"description": "FinOps Center of Excellence. FinOps distribué (champions par BU). Roadmap intégrée à la stratégie IT.", "deliverables" : [ {"id" : "PO-RN-DEL-01", "name": "Réseau de champions FinOps par BU", "description": "Liste des FinOps champions (1+ par BU) avec responsabilités et OKR. ", "format": "Document"}, {"id": "PO-RN-DEL-02", "name": "Registre decisions avec impact $", "description":"Registre des decisions FinOps avec impact mesure (% savings/coût) et lessons learned. ", "format":"Registre"}, {"id": "PO-RN-DEL-03", "name" : "Roadmap intégrée strategie IT/Business", "description": "Roadmap FinOps partagée et alignée avec roadmap CIO/CFO. ", "format" : "Document"} ], "assessments" : [ {"id": "PO-RN-01", "statement": "Un réseau de champions FinOps existe (1 par BU/produit)", "evidence_example" : "Liste champions + responsabilités"}, {"id": "PO-RN-02", "statement": "Les decisions FinOps sont tracees avec impact mesure", "evidence example": "Registre decisions avec $ impact"}, {"id": "PO-RN-03", "statement": "La roadmap FinOps est alignée à la stratégie IT/Business", "evidence_example":"Roadmap partagée CIO/CFO"}], "kpi_targets": {"finops_fte":"> 10 + champions", "rituals_active":"> 5", "champions_per_bu": "> 1"} }}
+                },
+                {
+                    "id": "education_enablement", "abbr": "EE", "name": "FinOps Education & Enablement", "description": "Formation, certifications, evangelisation, documentation, onboarding.", "maturity" : {"crawl": {"description": "Formations ad-hoc pour l'équipe FinOps. ", "deliverables" : [ {"id" : "EE-CR-DEL-01", "name": "FinOps Certified Practitioner (equipe)", "description": "Au moins 1 membre équipe FinOps a la certif FinOps Certified Practitioner . ", "format" :"Certification"}, {"id" : "EE-CR-DEL-02", "name": "Guide d'introduction FinOps interne", "description": "Guide intro FinOps de 5-10 pages pour onboarder l'équipe. ", "format": "Document"}, {"id": "EE-CR-DEL-03", "name":"Liste formations suivies", "description":"Liste des formations FinOps suivies avec dates et participants. ", "format" : "Document"} ], "assessments" : [ {"id" : "EE-CR-01", "statement": "L'équipe FinOps a suivi au moins une formation officielle", "evidence_example": "FinOps Certified Practitioner"}], "kpi_targets": {"certified practitioners": "< 3", "trained_engineers_pct":"< 10%"}}, "walk" : {"description": "Programme de formation pour Engineering/Finance. Wiki FinOps. Onboarding standardise.", "deliverables": [{"id":"EE-WK-DEL-01", "name": "Parcours FinOps sur LMS", "description": "Parcours formation FinOps sur plateforme LMS avec modules + quiz.","format": "Curriculum"}, {"id" : "EE-WK-DEL-02", "name":"FinOps Wiki / Backstage Portal", "description":"Portail centralisé : doc, FAQ, tutos, contacts, KPI. ", "format": "Plateforme"}, {"id": "EE-WK-DEL-03", "name": "Onboarding Checklist incluant FinOps", "description": "Checklist onboarding nouveaux engineers avec module FinOps obligatoire. ", "format": "Checklist"} ], "assessments": [ {"id" :"EE-WK-01", "statement": "Un programme de formation FinOps pour les engineers existe", "evidence_example": "Parcours FinOps sur plateforme LMS"}, {"id": "EE-WK-02", "statement": "Un wiki/portail FinOps est maintenu", "evidence_example": "Confluence/Backstage FinOps"}, {"id": "EE-WK-03", "statement":"L'onboarding des nouveaux engineers inclut FinOps", "evidence_example":"Checklist onboarding"}], "kpi_targets": {"certified_practitioners":"5-15", "trained_engineers_pct":"30-70%"}}, "run" : {"description": "Culture FinOps diffusée. Certifications massives. FinOps dans les performance reviews.", "deliverables": [{"id":"EE-RN-DEL-01", "name": "Tracking completion formations engineers", "description": "Dashboard de tracking completion formations avec target 250%. ", "format": "Dashboard"}, {"id":"EE-RN-DEL-02", "name": ">10 FinOps Certified Practitioners", "description": ">10 membres certifiés FinOps Foundation Practitioner ou avancé. ", "format": "Certification"}, {"id":"EE-RN-DEL-03", "name": "FinOps dans performance reviews", "description":"Critère performance review intégrant FinOps awareness pour engineers.", "format": "Process"}], "assessments": [{"id": "EE-RN-01", "statement": "≥ 50% des engineers sont FinOps-aware (formation suivie)", "evidence_example": "Tracking completion formations" }, {"id": "EE-RN-02", "statement": "Des certifications FinOps Foundation sont obtenues", "evidence_example" : "> 10 FinOps Certified Practitioners"}, {"id": "EE-RN-03", "statement":"FinOps est dans les objectifs de performance engineers", "evidence_example": "Critère performance review"}], "kpi_targets":{"certified practitioners":"> 15","trained_engineers_pct" : "> 80%"} }}
+                },
+                {
+                    "id":"policy_governance", "abbr": "CG", "name":"Cloud Policy & Governance", "description": "Policies, guardrails, quotas, tagging enforcement, approvals, sécurité FinOps. ", "maturity" : {"crawl" : {"description": "Policies documentées informelles. Enforcement réactif. ", "deliverables" : [{"id": "CG-CR-DEL-01", "name": "Wiki policies FinOps basiques", "description": "Wiki documentant policies basiques (tagging, naming) avec procedure exception. ", "format": "Document"}, {"id": "CG-CR-DEL-02", "name": "Liste des policies en place (informelles)", "description":"Liste des policies informelles existantes avec scope et owner. ", "format": "Document"}, {"id": "CG-CR-DEL-03", "name":"Procedure de remontée violations (manuelle)", "description": "Procedure manuelle de remontée des violations identifiées a posteriori. ", "format" : "Document"} ], "assessments" : [ {"id" : "CG-CR-01", "statement":"Des policies basiques sont documentées (tagging, naming)", "evidence_example":"Wiki policies FinOps"}], "kpi_targets":{"policies_count":"< 5", "enforcement_automated_pct":"< 30%"} }, "walk": {"description": "Guardrails automatiques (SCP, Azure Policy, Organization Policy GCP). Approval process.", "deliverables": [{"id": "CG-WK-DEL-01", "name":"SCP/Azure Policy/Org Policy actives", "description":"Policies déployées au niveau org : tagging enforce, region restrict, instance type limit.", "format": "Policy"}, {"id": "CG-WK-DEL-02", "name":"ServiceNow workflow approbation cloud", "description": "Workflow ServiceNow d'approbation pour ressources >seuil. ", "format": "Process"}, {"id": "CG-WK-DEL-03", "name":"Registre exceptions avec TTL", "description": "Registre des exceptions policies avec owner, justification, TTL. ", "format": "Registre"} ], "assessments": [{"id":"CG-WK-01","statement": "Des SCP/Azure Policy/Org Policy sont actives", "evidence_example": "Policies déployées à l'org"}, {"id" : "CG-WK-02", "statement": "Un process d'approbation existe pour les ressources > seuil", "evidence_example": "ServiceNow workflow achat cloud"}, {"id": "CG-WK-03", "statement":"Les exceptions policies sont tracées", "evidence_example": "Registre exceptions avec TTL"}],"kpi_targets": {"policies_count":"10-30", "enforcement_automated_pct": "60-90%"}}, "run" : {"description":"Policy-as-code. Enforcement 100% automatique. Auto-remédiation. Policies évolutives (continuous improvement) .", "deliverables" : [{"id" :"CG-RN-DEL-01", "name" :"Repo policies-as-code (Terraform/OPA)", "description": "Repo Git de policies (Terraform/OPA/Sentinel) avec CI/CD et review. ", "format": "Code"}, {"id": "CG-RN-DEL-02", "name": "Lambda remediation tags manquants", "description": "Auto-remédiation Lambda/Function App pour violations courantes (tags manquants, etc. ) . ", "format" : "Script"}, {"id": "CG-RN-DEL-03", "name": "QBR policy review trimestrielle", "description": "QBR trimestrielle de revue/extension des policies avec backlog amélioration continue.", "format": "Process"}], "assessments" : [{"id": "CG-RN-01", "statement" :"Les policies sont déployées as-code (Terraform, OPA)", "evidence_example" : "Repo policies-as-code"}, {"id": "CG-RN-02", "statement": "L'auto-remediation fonctionne pour les violations courantes", "evidence_example" : "Lambda remediation tags manquants"}, {"id": "CG-RN-03", "statement": "Les policies sont revues et étendues trimestriellement", "evidence_example": "QBR policy review"}], "kpi_targets":{"policies_count":"> 30", "enforcement_automated_pct": "100%" } }}
+                },
+                {
+                    "id":"invoicing_chargeback", 
+                    "abbr":"IC",
+                    "name":"Invoicing & Chargeback", 
+                    "description": "Showback (visibilité), chargeback (refacturation interne), gestion des factures providers. ", 
+                    "maturity" : {
+                        "crawl" : {
+                            "description":"Factures cloud traitées centralement sans refacturation BU.", 
+                            "deliverables": [
+                                {
+                                    "id":"IC-CR-DEL-01", 
+                                    "name": "Réconciliation mensuelle factures vs usage", 
+                                    "description": "Process mensuel rapprochant factures providers et données usage interne. ", 
+                                    "format": "Process"
+                                }, 
+                                {
+                                    "id" : "IC-CR-DEL-02", 
+                                    "name": "Liste BU avec spend identifié", 
+                                    "description":"Liste des BU avec leur spend cloud identifié (sans refacturation) . ", 
+                                    "format" : "Document"
+                                }, 
+                                {
+                                    "id": "IC-CR-DEL-03", 
+                                    "name": "Procédure de gestion factures providers", 
+                                    "description" : "Procédure documentée de gestion (réception, validation, paiement) factures cloud. ", 
+                                    "format" : "Process"
+                                } 
+                            ], 
+                            "assessments": [
+                                {
+                                    "id":"IC-CR-01", 
+                                    "statement": "Les factures cloud sont rapprochées avec les données d'usage", 
+                                    "evidence_example": "Reconciliation mensuelle"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "chargeback_enabled": "No", 
+                                "showback_coverage_pct":"< 30%"
+                            }
+                        }, 
+                        "walk": {
+                            "description":"Showback actif par BU. Chargeback partiel. Process d'invoicing fiabilisé. ", 
+                            "deliverables":[
+                                {
+                                    "id": "IC-WK-DEL-01", "name":"Showback Monthly Report par BU", "description": "Email mensuel showback avec spend BU, trend, recommandations. ", "format": "Rapport"
+                                }, 
+                                {
+                                    "id": "IC-WK-DEL-02", "name": "Chargeback partiel pour ≥1 BU", "description":"Refacturation trimestrielle implémentée pour au moins une BU pilote.", "format": "Pipeline"
+                                }, 
+                                {
+                                    "id": "IC-WK-DEL-03", "name": "SLA réconciliation 30j", "description": "SLA documenté de 30j pour réconciliation factures/usage avec tracking. ", "format": "Document"
+                                }
+                            ], 
+                            "assessments": [
+                                {
+                                    "id":"IC-WK-01", "statement": "Un showback mensuel est envoyé à chaque BU", "evidence_example": "Email mensuel avec spend BU"
+                                }, 
+                                {
+                                    "id": "IC-WK-02", "statement": "Le chargeback est en place pour au moins une BU", "evidence_example" : "Refacturation trimestrielle une BU"
+                                }, 
+                                {
+                                    "id": "IC-WK-03", "statement": "Les écarts facture/usage sont traités dans les 30j", "evidence_example" : "SLA réconciliation"
+                                } 
+                            ], 
+                            "kpi_targets" : {
+                                "chargeback_enabled": "Partial", 
+                                "showback_coverage_p ": "60-90%"
+                            }
+                        }, 
+                        "run" : {
+                            "description": "Chargeback complet automatisé. Intégration ERP. Reconciliation continue.",
+                            "deliverables": [
+                                {
+                                    "id":"IC-RN-DEL-01", "name":"Pipeline chargeback automatisé mensuel", "description":"Pipeline automatique mensuel de calcul + posting des charges aux BU","format": "Pipeline"
+                                }, 
+                                {
+                                    "id": "IC-RN-DEL-02", "name":"Intégration ERP Finance (auto-posting)","description":"Intégration ERP (SAP/Oracle) avec journal Finance auto-posté.", "format": "Pipeline"
+                                }, 
+                                {
+                                    "id": "IC-RN-DEL-03", "name": "Process approbation BU mensuelle", "description": "Process où chaque BU approuve formellement sa facture mensuelle. ", "format": "Process"
+                                } 
+                            ], 
+                            "assessments": [
+                                {
+                                    "id":"IC-RN-01","statement": "100% du spend est chargé aux BU de façon automatisée", "evidence_example" : "Pipeline chargeback mensuel auto"
+                                }, 
+                                {
+                                    "id": "IC-RN-02", "statement": "Le chargeback est intégré à l'ERP Finance", "evidence_example" : "Journal Finance auto-posté"
+                                }, 
+                                {
+                                    "id": "IC-RN-03", "statement": "Les BU valident leur facture mensuelle", "evidence_example":"Process approbation BU"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "chargeback_enabled":"Full",
+                                "showback_coverage_pct": "100%", 
+                                "chargeback_automation_pct" : "100%"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "finops_assessment", 
+                    "abbr" : "FA", 
+                    "name": "FinOps Assessment", 
+                    "description": "Évaluation régulière de la maturité FinOps (capabilities, personas, outils) .", 
+                    "maturity": {
+                        "crawl": {
+                            "description": "Pas d'assessment formel.", 
+                            "deliverables" : [ 
+                                {
+                                    "id" : "FA-CR-DEL-01", "name" : "Auto-évaluation interne first-time", "description": "Rapport auto-assessment interne realise au moins une fois . " , "format" : "Rapport"
+                                }, 
+                                {
+                                    "id" : "FA-CR-DEL-02", "name" : "Liste capabilities FinOps Framework", "description": "Document listant les capabilities FinOps Foundation à évaluer.", "format": "Document"
+                                }, 
+                                {
+                                    "id": "FA-CR-DEL-03", "name" : "Méthodologie d'évaluation basique", "description": "Méthodo basique d'évaluation par capability (oui/non/partiel) . ", "format " : "Document" 
+                                } 
+                            ], 
+                            "assessments" : [ 
+                                {
+                                    "id" : "FA-CR-01", 
+                                    "statement": "Une auto-évaluation a été réalisée au moins une fois", 
+                                    "evidence example" : "Rapport auto-assessment interne"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "assessment_cadence_months":"> 24", 
+                                "external_assessment_done": "No"
+                            }
+                        }, 
+                        "walk": {
+                            "description": "Assessment annuel interne. Plan d'action suivi.", 
+                            "deliverables": [ {
+                                "id": "FA-WK-DEL-01", "name" : "Annual FinOps Assessment Report","description":"Rapport annuel d'évaluation maturité contre FinOps Framework par capability .", "format" : "Rapport"
+                            }, 
+                            { 
+                                "id" : "FA-WK-DEL-02", "name": "Action Plan Backlog priorisé", "description":"Backlog Jira/Confluence d'actions priorisées impact/effort/risque.", "format": "Backlog"
+                            }, 
+                            { 
+                                "id": "FA-WK-DEL-03", "name" : "Methodologie scoring (Crawl/Walk/Run)", "description": "Méthodologie de scoring documentée avec seuils et pondérations . ", "format" : "Document" 
+                            } 
+                        ], 
+                        "assessments" : [ 
+                            {
+                                "id" : "FA-WK-01", "statement": "Un assessment annuel est réalisé contre le FinOps Framework", "evidence_example" : "Rapport assessment 2024"
+                            }, 
+                            {
+                                "id" : "FA-WK-02", "statement":"Un plan d'action découle de l'assessment", "evidence_example": "Backlog issu de l'assessment"
+                            }
+                        ],
+                        "kpi_targets" : {
+                            "assessment_cadence_months": "12", 
+                            "action_plan_execution_pct" : "50-80%" 
+                        } 
+                    }, 
+                    "run": {
+                        "description": "Assessment semestriel + assessment externe annuel. Benchmark peer. KPI maturité publiés. ", 
+                        "deliverables": [
+                            {
+                                "id": "FA-RN-DEL-01", 
+                                    "name": "Assessment externe annuel (cabinet)", 
+                                    "description": "Rapport assessment externe (partenaire ou FinOps Foundation) avec recommandations .", 
+                                    "format": "Rapport"
+                                }, 
+                                {
+                                    "id": "FA-RN-DEL-02", "name": "Executive Maturity Dashboard trimestriel", "description": "Dashboard maturité publie à l'Executive avec scores par domaine et tendance. ", "format": "Dashboard"
+                                }, 
+                                {
+                                    "id":"FA-RN-DEL-03", "name": "Contributions FinOps Foundation", "description": "Talks FinOps X, papers, contribution à benchmarks FinOps Foundation .", "format" : "Document"
+                                } 
+                            ], 
+                            "assessments": [
+                                {
+                                    "id" : "FA-RN-01", "statement": "Un assessment externe (partenaire ou FinOps Foundation) a été réalisé", "evidence example": "Rapport cabinet externe"
+                                }, 
+                                {
+                                    "id": "FA-RN-02", "statement":"Les scores de maturité sont publies à l'Executive", "evidence_example": "Slide maturité trimestrielle"
+                                }, 
+                                {
+                                    "id" : "FA-RN-03", "statement":"L'organisation contribue au FinOps Foundation (benchmarks, talks)", "evidence_example": "Talk FinOps X, publication"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "assessment_cadence_months":"6", 
+                                "external_assessment_done" : "Yes", 
+                                "action_plan_execution_pct":"> 90%"
+                            } 
+                        }
+                    }
+                },
+                {
+                    "id": "onboarding_workloads", 
+                    "abbr": "OW", 
+                    "name": "Onboarding Workloads", 
+                    "description":"Processus d'intégration d'un nouveau workload/BU dans la pratique FinOps.", 
+                    "maturity": {
+                        "crawl" : {
+                            "description": "Pas de process formel d'onboarding FinOps. ", 
+                            "deliverables" : [ 
+                                {
+                                    "id" : "OW-CR-DEL-01", "name" : "Checklist add compte plateforme FinOps", "description": "Checklist d'ajout d'un nouveau compte AWS/Azure/GCP à la plateforme FinOps.", "format": "Checklist"
+                                }, 
+                                {
+                                    "id" : "OW-CR-DEL-02", "name": "Procédure de création compte cloud", "description": "Procédure manuelle documentée de création de nouveaux comptes/abonnements . ", "format" : "Process"
+                                }, 
+                                {
+                                    "id" : "OW-CR-DEL-03", "name": "Liste comptes/abonnements onboardes", "description":"Liste tracking des comptes onboardes avec date et owner . ", "format": "Document"
+                                } 
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id" : "OW-CR-01", "statement": "Les nouveaux comptes sont ajoutés à la plateforme FinOps", "evidence_example": "Checklist add compte Cloudability"
+                                } 
+                            ], 
+                            "kpi_targets": {
+                                "time_to_onboard days":"> 30", 
+                                "onboarding_checklist_exists": "No"
+                            }
+                        }, 
+                        "walk": {
+                            "description": "Checklist d'onboarding. Templates d'enrollment. Time-to-first-report < 14 jours. ", "deliverables": [{"id": "OW-WK-DEL-01", "name": "FinOps Onboarding Checklist standardisée", "description": "Checklist standardisee pour nouveau workload/BU (tags, budget, dashboard) . ", "format": "Checklist"}, {"id": "OW-WK-DEL-02", "name": "Tags requis au create compte", "description": "Policy enforce tags requis des creation compte/abonnement . ", "format" : "Policy"}, {"id" : "OW-WK-DEL-03", "name": "SLA onboarding < 14 jours", "description":"SLA documente time-to-first-report < 14 jours avec tracking. ", "format": "Document"} ], "assessments": [{"id": "OW-WK-01", "statement":"Une checklist d'onboarding FinOps existe", "evidence_example": "Checklist documentee"}, {"id": "OW-WK-02", "statement": "Le tagging est impose dès 1'onboarding", "evidence_example":"Tags requis au create compte"}, {"id" : "OW-WK-03", "statement": "Le workload est visible dans les dashboards en < 14j", "evidence_example": "SLA onboarding"}], "kpi_targets": {"time_to_onboard_days": "7-14" , "onboarding_checklist_exists": "Yes"}}, 
+                        "run": {
+                            "description": "Onboarding automatisé. Landing zones FinOps-ready. Self-service. ", 
+                            "deliverables" : [ 
+                                {
+                                    "id" : "OW-RN-DEL-01", 
+                                    "name": "Landing Zone FinOps-Ready (IaC)", "description":"Templates AWS Control Tower / Azure Landing Zone avec FinOps baked in (tags, budgets, guardrails) . ", 
+                                    "format": "IaC"
+                                }, 
+                                {
+                                    "id" : "OW-RN-DEL-02","name": "Self-Service Onboarding Portal", "description":"Portail self-service pour BU avec provisioning automatisé tags + budget + guardrails. ", 
+                                    "format": "Plateforme"
+                                }, 
+                                {
+                                    "id": "OW-RN-DEL-03", "name": "SLA onboarding < 72h", "description": "SLA time-to-first-report ≤ 72h avec monitoring du SLA. " , 
+                                    "format" : "Document"
+                                } 
+                            ], 
+                            "assessments" : [ 
+                                {
+                                    "id" : "OW-RN-01", "statement": "Le provisioning compte inclut automatiquement tags + budgets + guardrails", 
+                                    "evidence_example": "AWS Control Tower / Azure Landing Zone FinOps-ready"
+                                }, 
+                                {
+                                    "id": "OW-RN-02", "statement" : "Les BU peuvent s'onboarder en self-service", "evidence_example": "Portail self-service avec IaC"
+                                },
+                                {
+                                    "id" : "OW-RN-03", "statement" : "Le time-to-first-report est < 3 jours", "evidence_example":"SLA ≤ 72h"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "time_to_onboard_days":"< 3", 
+                                "onboarding_automation_pct":"> 95%"
+                            } 
+                        } 
+                    } 
+                },
+                {
+                    "id": "intersecting_disciplines", 
+                    "abbr": "ID", 
+                    "name": "Intersecting Disciplines", 
+                    "description": "Liens avec ITAM, ITFM, ITSM, SRE, Security, Sustainability, Procurement.", 
+                    "maturity" : {
+                        "crawl": {
+                            "description": "Pas de coordination formelle avec disciplines adjacentes. ", 
+                            "deliverables": [
+                                {
+                                    "id":"ID-CR-DEL-01","name":"Stakeholder Map (ITAM/Procurement/Finance)", "description": "Carte des contacts clés ITAM/Procurement/Finance avec coordonnées .", "format" : "Document" 
+                                }, 
+                                {
+                                    "id" : "ID=CR-DEL-02", "name": "Liste interactions cross-fonctionnelles", "description": "Liste des interactions FinOps autres disciplines avec fréquence. ", "format" : "Document"
+                                }, 
+                                {
+                                    "id": "ID-CR-DEL-03", "name" : "Première rencontre Procurement", "description" : "Compte-rendu de la première rencontre formelle FinOps Procurement." , "format" : "Document"
+                                } 
+                            ]
+                            , 
+                            "assessments": [
+                                {
+                                    "id":"ID-CR-01", "statement":"Les contacts clés dans ITAM/Procurement/Finance sont identifiés", "evidence_example": "Stakeholder_map"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "cross_functional_rituals":"< 2"
+                            }
+                        }, 
+                        "walk" : {
+                            "description" : "Rituels cross-fonctionnels. Partage de données. Alignement roadmap. ", 
+                            "deliverables": [
+                                {
+                                    "id":"ID-WK-DEL-01","name": "Monthly FinOps Procurement ritual", "description": "Rituel mensuel documente FinOps | Procurement avec agenda et CR. ", "format" : "Document"
+                                }, 
+                                {
+                                    "id" : "ID-WK-DEL-02", "name": "Export mensuel données vers Finance", "description": "Pipeline d'export mensuel des données FinOps consolidées vers Finance. ", 
+                                    "format": "Pipeline"
+                                }, 
+                                {
+                                    "id": "ID-WK-DEL-03", "name": "CMDB enrichie avec tags FinOps","description": "CMDB ITAM enrichie avec tags FinOps (cost-center, app, env) . ", "format": "Pipeline"
+                                }
+                            ], 
+                            "assessments":[
+                                {
+                                    "id":"ID-WK-01", "statement":"Des rituels réguliers avec Procurement existent", "evidence_example" : "Monthly FinOps x Procurement"
+                                }, 
+                                {
+                                    "id": "ID-WK-02", "statement": "Les données FinOps sont partagees avec Finance", "evidence_example": "Export mensuel vers Finance"
+                                }, 
+                                {
+                                    "id": "ID-WK-03", "statement": "ITAM et FinOps partagent un inventaire", "evidence_example":"CMDB enrichie avec tags FinOps"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "cross_functional_rituals": "3-5"
+                            } 
+                        }, 
+                        "run" : {
+                            "description": "Processus intégrés bout-en-bout. Gouvernance conjointe. Objectifs partagés. ", 
+                            "deliverables" : [ 
+                                {
+                                    "id" : "ID-RN-DEL-01", "name": "OKR cross-fonctionnels (FinOps ITAM Proc)", "description": "OKR documentés partagés entre FinOps, ITAM, ITFM, Procurement. ", "format": "OKR"
+                                }, 
+                                {
+                                    "id": "ID-RN-DEL-02", "name" : "Co-ownership Sustainability FinOps ESG", "description": "Document de co-ownership sustainability cloud entre FinOps et ESG.", "format":"Document"
+                                }, 
+                                {
+                                    "id": "ID-RN-DEL-03","name": "TBM/ITFM model alimente par FinOps", "description": "Modèle TBM/ITEM intégré avec alimentation automatique depuis FinOps.", "format": "Pipeline" 
+                                }
+                            ], 
+                            "assessments": [ 
+                                {
+                                    "id" : "ID-RN-01", "statement": "FinOps, ITAM, ITFM, Procurement ont des OKR partagés", "evidence_example" :"OKR cross-fonctionnels"
+                                }, 
+                                {
+                                    "id": "ID-RN-02","statement": "La sustainability est co-owned FinOps + ESG", "evidence_example":"Co-ownership explicite"
+                                }, 
+                                {
+                                    "id": "ID-RN-03", "statement": "Un TBM/ITFM model est en place avec alimentation FinOps", "evidence_example" : "Modèle TBM intégré"
+                                }
+                            ], 
+                            "kpi_targets": {
+                                "cross_functional_rituals":"> 5", 
+                                "shared_okrs_count" : "> 3"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "usage": 
+    {
+        "description": "Pour conduire une évaluation FinOps : pour chaque capability, évaluer chaque assessment (oui/non/partiel) au niveau visé. Le niveau atteint est le plus haut où tous les assessments sont majoritairement 'oui' . Calculer un score pondere global par domaine.", 
+        "scoring_model":
+        {
+            "per_assessment": 
+            {
+                "yes":1.0,"partial":0.5,"no":0.0, "not_applicable":null},
+                "capability_score": "moyenne des assessments du niveau le plus élevé atteint (seuil 80% pour valider le niveau)", 
+                "domain_score" :"moyenne des capability_scores du domaine", 
+                "overall_maturity":"moyenne des 4 domain_scores (0-3 : 0=Pre-Crawl, 1=Crawl, 2=Walk, 3=Run)"
+            }, 
+            "recommended_cadence" : "Assessment complet annuel + réévaluation ciblée trimestrielle sur les capabilities prioritaires.", 
+            "total_capabilities": 21, 
+            "total_assessments": 214, 
+            "total_deliverables": 189
+        }
+    }
